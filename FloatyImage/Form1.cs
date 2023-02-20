@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -48,8 +49,9 @@ namespace FloatyImage
       {
         return;
       }
-
-      LoadNextFile(args);
+      
+      var files = GetAllFiles(args);
+      LoadNextFile(files);
     }
 
     private void Form1_Load(object sender, EventArgs e)
@@ -84,7 +86,8 @@ namespace FloatyImage
       BackColor = _blankAreaColor;
       pictureBox1.Show();
 
-      var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+      var dropped = (string[])e.Data.GetData(DataFormats.FileDrop);
+      var files = GetAllFiles(dropped);
       LoadNextFile(files);
     }
 
@@ -188,15 +191,8 @@ namespace FloatyImage
       pictureBox1.Hide();
     }
 
-    private void LoadNextFile(string[] paths)
+    private void LoadNextFile(List<string> paths)
     {
-      //AL.
-      ////TODO -
-      /// Check each path to see if it's a directory.
-      /// If so, remove it from the list and get all its subpaths
-      /// add those subpaths to the main paths list
-      //call this same function again.
-
       var path = paths[0];
 
       Text = path.Substring(path.LastIndexOf('\\') + 1);
@@ -213,17 +209,17 @@ namespace FloatyImage
       }
       catch (Exception e)
       {
-        //MessageBox.Show(e.Message);
+        Console.WriteLine(e);
       }
 
-      paths = paths.Skip(1).ToArray();
-      if (paths.Length > 0)
+      paths.RemoveAt(0);  //paths = paths.Skip(1).ToArray();
+      if (paths.Count > 0)
       {
         LaunchNextInstance(paths);
       }
     }
     
-    private static void LaunchNextInstance(string[] args)
+    private static void LaunchNextInstance(List<string> args)
     {
       var argsFormatted = "";
       foreach (var arg in args)
@@ -245,24 +241,39 @@ namespace FloatyImage
       }
       catch (Exception e)
       {
-        MessageBox.Show(e.Message);
+        Console.WriteLine(e.Message);
       }
     }
 
-    private void string[] ExpandFolderThingy(string folder)
+    private static List<string> GetAllFiles(string[] paths)
     {
-      var attr = File.GetAttributes(folder);
-      if (attr.HasFlag(FileAttributes.Directory))
+      var fileList = new List<string>();
+
+      foreach (var path in paths)
       {
-        folder = folder.Skip(1).ToArray();
-        var files = Directory.GetFiles(folder);
-        paths = files.Concat(paths).ToArray();
-        if (paths.Length > 0)
+        if (File.Exists(path))
         {
-          LoadNextFile(paths);
+          fileList.Add(path);
+        }
+        else if (Directory.Exists(path))
+        {
+          fileList.AddRange(GetFilesFromDirectoryRecursively(path));
         }
       }
+
+      return fileList;
     }
 
+    private static List<string> GetFilesFromDirectoryRecursively(string directory)
+    {
+      var files = Directory.GetFiles(directory).ToList();
+
+      foreach (string subDirectory in Directory.GetDirectories(directory))
+      {
+        files.AddRange(GetFilesFromDirectoryRecursively(subDirectory));
+      }
+
+      return files;
+    }
   }
 }
