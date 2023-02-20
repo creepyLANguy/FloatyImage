@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using static System.Reflection.Assembly;
@@ -48,7 +49,7 @@ namespace FloatyImage
         return;
       }
 
-      LoadFile(args);
+      LoadNextFile(args);
     }
 
     private void Form1_Load(object sender, EventArgs e)
@@ -84,7 +85,7 @@ namespace FloatyImage
       pictureBox1.Show();
 
       var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-      LoadFile(files);
+      LoadNextFile(files);
     }
 
     private void PictureBox1_MouseWheel(object sender, MouseEventArgs e)
@@ -187,14 +188,22 @@ namespace FloatyImage
       pictureBox1.Hide();
     }
 
-    private void LoadFile(string[] files)
+    private void LoadNextFile(string[] paths)
     {
-      var file = files[0];
+      //AL.
+      ////TODO -
+      /// Check each path to see if it's a directory.
+      /// If so, remove it from the list and get all its subpaths
+      /// add those subpaths to the main paths list
+      //call this same function again.
 
-      Text = file.Substring(file.LastIndexOf('\\') + 1);
+      var path = paths[0];
+
+      Text = path.Substring(path.LastIndexOf('\\') + 1);
+
       try
       {
-        var image = Image.FromFile(file);
+        var image = Image.FromFile(path);
         pictureBox1.Image = image;
 
         //_lastLoadedImage = image;
@@ -204,13 +213,13 @@ namespace FloatyImage
       }
       catch (Exception e)
       {
-        MessageBox.Show(e.Message);
+        //MessageBox.Show(e.Message);
       }
 
-      files = files.Skip(1).ToArray();
-      if (files.Length > 0)
+      paths = paths.Skip(1).ToArray();
+      if (paths.Length > 0)
       {
-        LaunchNextInstance(files);
+        LaunchNextInstance(paths);
       }
     }
     
@@ -237,6 +246,21 @@ namespace FloatyImage
       catch (Exception e)
       {
         MessageBox.Show(e.Message);
+      }
+    }
+
+    private void string[] ExpandFolderThingy(string folder)
+    {
+      var attr = File.GetAttributes(folder);
+      if (attr.HasFlag(FileAttributes.Directory))
+      {
+        folder = folder.Skip(1).ToArray();
+        var files = Directory.GetFiles(folder);
+        paths = files.Concat(paths).ToArray();
+        if (paths.Length > 0)
+        {
+          LoadNextFile(paths);
+        }
       }
     }
 
