@@ -217,6 +217,8 @@ namespace FloatyImage
       var newHeight = pictureBox1.Image.Height * _zoomCurrent / 100;
 
       pictureBox1.Size = new Size(newWidth, newHeight);
+
+      Refresh();
     }
 
     private void LoadNextFile(List<string> paths)
