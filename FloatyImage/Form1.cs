@@ -27,6 +27,7 @@ namespace FloatyImage
     private int _zoomCurrent = 100;
 
     private bool _isHovering;
+    private bool _isDragging;
     private readonly HatchBrush _backgroundBrush;
     private readonly SolidBrush _overlayBrush;
 
@@ -42,6 +43,7 @@ namespace FloatyImage
 
       pictureBox1.MouseWheel += PictureBox1_MouseWheel;
       pictureBox1.MouseDown += PictureBox1_MouseDown;
+      pictureBox1.MouseUp += PictureBox1_MouseUp;
       pictureBox1.MouseEnter += PictureBox1_MouseEnter;
       pictureBox1.MouseLeave += PictureBox1_MouseLeave;
       pictureBox1.MouseMove += PictureBox1_MouseMove;
@@ -148,37 +150,26 @@ namespace FloatyImage
     }
 
     private void PictureBox1_MouseDown(object sender, MouseEventArgs e)
-    { 
+    {
+      _isDragging = true;
       _mouseLocation = e.Location;
+    }
+
+    private void PictureBox1_MouseUp(object sender, MouseEventArgs e)
+    {
+      _isDragging = false;
     }
 
     private void PictureBox1_MouseMove(object sender, MouseEventArgs e)
     {
-      if (pictureBox1.Image == null)
+      if (pictureBox1.Image == null || _isDragging == false)
       {
         return;
       }
 
-      switch (e.Button)
-      {
-        case MouseButtons.Left:
-        case MouseButtons.Middle:
-        case MouseButtons.Right:
-        {
-          var xDiff = e.Location.X - _mouseLocation.X;
-          var yDiff = e.Location.Y - _mouseLocation.Y;
-
-          pictureBox1.Location = new Point(pictureBox1.Location.X + xDiff, pictureBox1.Location.Y + yDiff);
-          break;
-        }
-        case MouseButtons.None:
-        case MouseButtons.XButton1:
-        case MouseButtons.XButton2:
-        default:
-        {
-          break;
-        }
-      }
+      pictureBox1.Left += e.X - _mouseLocation.X;
+      pictureBox1.Top += e.Y - _mouseLocation.Y;
+      Refresh();
     }    
     
     private void PictureBox1_MouseEnter(object sender, EventArgs e)
