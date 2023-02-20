@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -13,21 +15,30 @@ namespace FloatyImage
     private readonly string _defaultTitle = "(Drag an image file onto this window to begin)";
 
     private Point _mouseLocation;
-    private readonly Color _blankAreaColor = Color.DarkGray;
-    private readonly Color _dragDropColor = Color.CornflowerBlue;
+    private readonly Color _backgroundColor1 = Color.White;
+    private readonly Color _backgroundColor2 = Color.LightGray;
+    private readonly Color _overlayColor = Color.FromArgb(128, Color.MediumTurquoise);
+    private readonly HatchStyle _backgroundStyle = HatchStyle.LargeGrid;
+
 
     private readonly int _zoomMin = 10;
     private readonly int _zoomMax = 500;
     private readonly int _zoomStep = 3;
     private int _zoomCurrent = 100;
 
-    //private Image _lastLoadedImage;
+    private bool _isHovering;
+    private readonly HatchBrush _backgroundBrush;
+    private readonly SolidBrush _overlayBrush;
 
     public Form1(string [] args)
     {
       InitializeComponent();
 
       Load += Form1_Load;
+      Paint += PaintOverlay;
+      Paint += PaintBackground;
+
+      pictureBox1.Paint += PaintOverlay;
 
       pictureBox1.MouseWheel += PictureBox1_MouseWheel;
       pictureBox1.MouseDown += PictureBox1_MouseDown;
@@ -36,7 +47,6 @@ namespace FloatyImage
       pictureBox1.MouseMove += PictureBox1_MouseMove;
       
       pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-      pictureBox1.BackColor = _blankAreaColor;
 
       MouseWheel += PictureBox1_MouseWheel;
       DragEnter += Form1_DragEnter;
@@ -44,6 +54,9 @@ namespace FloatyImage
       DragLeave += Form1_DragLeave;
 
       Text = _defaultTitle;
+
+      _backgroundBrush = new HatchBrush(_backgroundStyle, _backgroundColor1, _backgroundColor2);
+      _overlayBrush = new SolidBrush(_overlayColor);
 
       if (args.Length == 0 || string.IsNullOrEmpty(args[0]))
       {
@@ -57,10 +70,31 @@ namespace FloatyImage
     private void Form1_Load(object sender, EventArgs e)
     {
       pictureBox1.BackColor = Color.Transparent;
-      BackColor = _blankAreaColor;
       DoubleBuffered = true;
       TopLevel = true;
       TopMost = true;
+    }
+    private void PaintBackground(object sender, PaintEventArgs e)
+    {
+      if (_isHovering)
+      {
+        return;
+      }
+
+      e.Graphics.FillRectangle(_backgroundBrush, ClientRectangle);
+    }
+
+    private void PaintOverlay(object sender, PaintEventArgs e)
+    {
+      if (_isHovering  == false)
+      {
+        return;
+      }
+
+      if (sender is Control control)
+      {
+        e.Graphics.FillRectangle(_overlayBrush, new Rectangle(Point.Empty, control.Size));
+      }
     }
 
     private void Form1_DragEnter(object sender, DragEventArgs e)
@@ -70,21 +104,22 @@ namespace FloatyImage
         return;
       }
 
+      _isHovering = true;
+      Invalidate();
+
       e.Effect = DragDropEffects.Copy;
-      ShowHoverEffect();
     }
 
     private void Form1_DragLeave(object sender, EventArgs e)
     {
-      BackColor = _blankAreaColor;
-      pictureBox1.Show();
-      //pictureBox1.Image = _lastLoadedImage;
+      _isHovering = false;
+      Invalidate();
     }
 
     private void Form1_DragDrop(object sender, DragEventArgs e)
     {
-      BackColor = _blankAreaColor;
-      pictureBox1.Show();
+      _isHovering = false;
+      Invalidate();
 
       var dropped = (string[])e.Data.GetData(DataFormats.FileDrop);
       var files = GetAllFiles(dropped);
@@ -179,18 +214,6 @@ namespace FloatyImage
       pictureBox1.Size = new Size(newWidth, newHeight);
     }
 
-    private void ShowHoverEffect()
-    {
-      if (pictureBox1.Image == null)
-      {
-        return;
-      }
-
-      BackColor = _dragDropColor;
-      //_lastLoadedImage = (Image)pictureBox1.Image.Clone();
-      pictureBox1.Hide();
-    }
-
     private void LoadNextFile(List<string> paths)
     {
       var path = paths[0];
@@ -232,7 +255,7 @@ namespace FloatyImage
 
       try
       {
-        var p = new System.Diagnostics.Process();
+        var p = new Process();
         p.StartInfo.FileName = location ?? throw new InvalidOperationException();
         p.StartInfo.Arguments = argsFormatted;
         p.StartInfo.UseShellExecute = false;
@@ -268,7 +291,7 @@ namespace FloatyImage
     {
       var files = Directory.GetFiles(directory).ToList();
 
-      foreach (string subDirectory in Directory.GetDirectories(directory))
+      foreach (var subDirectory in Directory.GetDirectories(directory))
       {
         files.AddRange(GetFilesFromDirectoryRecursively(subDirectory));
       }
