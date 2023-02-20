@@ -21,10 +21,11 @@ namespace FloatyImage
     private readonly HatchStyle _backgroundStyle = HatchStyle.LargeGrid;
 
 
-    private readonly int _zoomMin = 10;
+    private readonly int _zoomMin = 1;
     private readonly int _zoomMax = 500;
     private readonly int _zoomStep = 3;
-    private int _zoomCurrent = 100;
+    private static int _zoomDefault = 100;
+    private static int _zoomCurrent = _zoomDefault; //AL. //TODO - make sure that when you set the zoom to the default that it's actually the picturebox width as a percentage of the actual image width. 
 
     private bool _isHovering;
     private bool _isDragging;
@@ -38,9 +39,11 @@ namespace FloatyImage
       Load += Form1_Load;
       Paint += PaintOverlay;
       Paint += PaintBackground;
+      DoubleClick += ResetPictureboxPosition;
 
       pictureBox1.Paint += PaintOverlay;
-
+      pictureBox1.DoubleClick+= ResetPictureboxPosition;
+      
       pictureBox1.MouseWheel += PictureBox1_MouseWheel;
       pictureBox1.MouseDown += PictureBox1_MouseDown;
       pictureBox1.MouseUp += PictureBox1_MouseUp;
@@ -75,7 +78,9 @@ namespace FloatyImage
       DoubleBuffered = true;
       TopLevel = true;
       TopMost = true;
+      AllowDrop = true;
     }
+
     private void PaintBackground(object sender, PaintEventArgs e)
     {
       if (_isHovering)
@@ -192,6 +197,15 @@ namespace FloatyImage
       pictureBox1.Cursor = Cursors.Default;
     }
 
+    private void ResetPictureboxPosition(object sender, EventArgs e)
+    {
+      _zoomCurrent = _zoomDefault;
+      pictureBox1.Left = 0;
+      pictureBox1.Top = 0;
+      UpdateImageSize();
+      Refresh();
+    }
+
     private void UpdateImageSize()
     {
       if (pictureBox1.Image == null)
@@ -216,8 +230,6 @@ namespace FloatyImage
         var image = Image.FromFile(path);
         pictureBox1.Image = image;
 
-        //_lastLoadedImage = image;
-
         var bmp = (Bitmap)image;
         Icon = Icon.FromHandle(bmp.GetHicon());
       }
@@ -226,21 +238,21 @@ namespace FloatyImage
         Console.WriteLine(e);
       }
 
-      paths.RemoveAt(0);  //paths = paths.Skip(1).ToArray();
+      paths.RemoveAt(0);
       if (paths.Count > 0)
       {
         LaunchNextInstance(paths);
       }
     }
     
-    private static void LaunchNextInstance(List<string> args)
+    private static void LaunchNextInstance(List<string> paths)
     {
-      var argsFormatted = "";
-      foreach (var arg in args)
+      var args = "";
+      foreach (var path in paths)
       {
-        argsFormatted += "\"" + arg + "\"" + " ";
+        args += "\"" + path + "\"" + " ";
       }
-      argsFormatted = argsFormatted.TrimEnd(' ');
+      args = args.TrimEnd(' ');
 
       var location = GetEntryAssembly()?.Location;
 
@@ -248,7 +260,7 @@ namespace FloatyImage
       {
         var p = new Process();
         p.StartInfo.FileName = location ?? throw new InvalidOperationException();
-        p.StartInfo.Arguments = argsFormatted;
+        p.StartInfo.Arguments = args;
         p.StartInfo.UseShellExecute = false;
         p.StartInfo.CreateNoWindow = true;
         p.Start();
