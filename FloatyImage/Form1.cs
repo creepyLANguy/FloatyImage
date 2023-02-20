@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -19,7 +19,7 @@ namespace FloatyImage
     private readonly int _zoomStep = 3;
     private int _zoomCurrent = 100;
 
-    private Image _lastLoadedImage;
+    //private Image _lastLoadedImage;
 
     public Form1(string [] args)
     {
@@ -74,12 +74,14 @@ namespace FloatyImage
     private void Form1_DragLeave(object sender, EventArgs e)
     {
       BackColor = _blankAreaColor;
-      pictureBox1.Image = _lastLoadedImage;
+      pictureBox1.Show();
+      //pictureBox1.Image = _lastLoadedImage;
     }
 
     private void Form1_DragDrop(object sender, DragEventArgs e)
     {
       BackColor = _blankAreaColor;
+      pictureBox1.Show();
 
       var files = (string[])e.Data.GetData(DataFormats.FileDrop);
       LoadFile(files);
@@ -181,7 +183,8 @@ namespace FloatyImage
       }
 
       BackColor = _dragDropColor;
-      _lastLoadedImage = (Image)pictureBox1.Image.Clone();
+      //_lastLoadedImage = (Image)pictureBox1.Image.Clone();
+      pictureBox1.Hide();
     }
 
     private void LoadFile(string[] files)
@@ -189,15 +192,20 @@ namespace FloatyImage
       var file = files[0];
 
       Text = file.Substring(file.LastIndexOf('\\') + 1);
+      try
+      {
+        var image = Image.FromFile(file);
+        pictureBox1.Image = image;
 
-      var image = Image.FromFile(file);
+        //_lastLoadedImage = image;
 
-      pictureBox1.Image = image;
-
-      _lastLoadedImage = image;
-
-      var bmp = (Bitmap)image;
-      Icon = Icon.FromHandle(bmp.GetHicon());
+        var bmp = (Bitmap)image;
+        Icon = Icon.FromHandle(bmp.GetHicon());
+      }
+      catch (Exception e)
+      {
+        MessageBox.Show(e.Message);
+      }
 
       files = files.Skip(1).ToArray();
       if (files.Length > 0)
