@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -378,10 +377,5 @@ namespace FloatyImage
 
       return files;
     }
-
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
-
-        }
-    }
+  }
 }
