@@ -16,11 +16,10 @@ namespace FloatyImage
     private readonly string _pastedImageTitle = "[Pasted Image]";
 
     private Point _mouseLocation;
-    private readonly Color _backgroundColor1 = Color.White;
-    private readonly Color _backgroundColor2 = Color.LightGray;
-    private readonly Color _overlayColor = Color.FromArgb(128, Color.MediumTurquoise);
-    private readonly HatchStyle _backgroundStyle = HatchStyle.LargeGrid;
-
+    private static readonly Color _backgroundColor1 = Color.White;
+    private static readonly Color _backgroundColor2 = Color.LightGray;
+    private static readonly Color _overlayColor = Color.FromArgb(128, Color.MediumTurquoise);
+    private static readonly HatchStyle _backgroundStyle = HatchStyle.LargeGrid;
 
     private readonly int _zoomMin = 1;
     private readonly int _zoomMax = 500;
@@ -30,8 +29,11 @@ namespace FloatyImage
 
     private bool _isHovering;
     private bool _isDragging;
-    private readonly HatchBrush _backgroundBrush;
-    private readonly SolidBrush _overlayBrush;
+
+    private static readonly HatchBrush _backgroundBrush = new HatchBrush(_backgroundStyle, _backgroundColor1, _backgroundColor2);
+    private readonly SolidBrush _overlayBrush = new SolidBrush(_overlayColor);
+
+    private readonly OpenFileDialog openFileDialog = new OpenFileDialog();
 
     private readonly ContextMenu contextMenu = new ContextMenu();
     private readonly MenuItem menuItem_open = new MenuItem("Open");
@@ -43,32 +45,13 @@ namespace FloatyImage
     {
       InitializeComponent();
 
-      Load += Form1_Load;
-      Paint += PaintOverlay;
-      Paint += PaintBackground;
+      SetupEventHandlers();
 
-      pictureBox1.Paint += PaintOverlay;
-      
-      pictureBox1.MouseWheel += PictureBox1_MouseWheel;
-      pictureBox1.MouseDown += PictureBox1_MouseDown;
-      pictureBox1.MouseUp += PictureBox1_MouseUp;
-      pictureBox1.MouseEnter += PictureBox1_MouseEnter;
-      pictureBox1.MouseLeave += PictureBox1_MouseLeave;
-      pictureBox1.MouseMove += PictureBox1_MouseMove;
-      
-      pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+      SetupContextMenu();
 
-      SetupContextMenu();      
-
-      MouseWheel += PictureBox1_MouseWheel;
-      DragEnter += Form1_DragEnter;
-      DragDrop += Form1_DragDrop;
-      DragLeave += Form1_DragLeave;
+      openFileDialog.Multiselect = true;
 
       Text = _defaultTitle;
-
-      _backgroundBrush = new HatchBrush(_backgroundStyle, _backgroundColor1, _backgroundColor2);
-      _overlayBrush = new SolidBrush(_overlayColor);
 
       if (args.Length == 0 || string.IsNullOrEmpty(args[0]))
       {
@@ -86,6 +69,29 @@ namespace FloatyImage
       TopLevel = true;
       TopMost = true;
       AllowDrop = true;
+    }
+
+    private void SetupEventHandlers()
+    {
+      Load += Form1_Load;
+      Paint += PaintOverlay;
+      Paint += PaintBackground;
+
+      pictureBox1.Paint += PaintOverlay;
+
+      pictureBox1.MouseWheel += PictureBox1_MouseWheel;
+      pictureBox1.MouseDown += PictureBox1_MouseDown;
+      pictureBox1.MouseUp += PictureBox1_MouseUp;
+      pictureBox1.MouseEnter += PictureBox1_MouseEnter;
+      pictureBox1.MouseLeave += PictureBox1_MouseLeave;
+      pictureBox1.MouseMove += PictureBox1_MouseMove;
+
+      pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+
+      MouseWheel += PictureBox1_MouseWheel;
+      DragEnter += Form1_DragEnter;
+      DragDrop += Form1_DragDrop;
+      DragLeave += Form1_DragLeave;
     }
 
     private void SetupContextMenu()
@@ -229,8 +235,10 @@ namespace FloatyImage
 
     private void ShowOpenDialog(object sender, EventArgs e)
     {
-      //AL. 
-      //TODO - implement       
+      if (openFileDialog.ShowDialog() == DialogResult.OK)
+      {
+        LoadNextFile(openFileDialog.FileNames);
+      }
     }
 
     private void Copy(object sender, EventArgs e)
@@ -286,6 +294,11 @@ namespace FloatyImage
       pictureBox1.Size = new Size(newWidth, newHeight);
 
       Refresh();
+    }
+
+    private void LoadNextFile(string[] paths)
+    {
+      LoadNextFile(paths.ToList());
     }
 
     private void LoadNextFile(List<string> paths)
