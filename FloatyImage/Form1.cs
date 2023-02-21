@@ -298,6 +298,8 @@ namespace FloatyImage
 
       var title = path.Substring(path.LastIndexOf('\\') + 1);
 
+      var failedToLoad = false;
+
       try
       {
         var image = Image.FromFile(path);
@@ -305,6 +307,7 @@ namespace FloatyImage
       }
       catch (Exception ex)
       {
+        failedToLoad = true;
         LogException(ex);
       }
 
@@ -312,6 +315,11 @@ namespace FloatyImage
       if (paths.Count > 0)
       {
         LaunchNextInstance(paths);
+      }
+
+      if (failedToLoad)
+      {
+        Close();
       }
     }
 
