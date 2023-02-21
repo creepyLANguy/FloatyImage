@@ -12,34 +12,34 @@ namespace FloatyImage
 {
   public sealed partial class Form1 : Form
   {
-    private readonly string _defaultTitle = "(Right click on canvas or drag on images/folders to begin)";
-    private readonly string _pastedImageTitle = "[Pasted Image]";
+    private const string DefaultTitle = "(Right click on canvas or drag on images/folders to begin)";
+    private const string PastedImageTitle = "[Pasted Image]";
 
     private Point _mouseLocation;
-    private static readonly Color _backgroundColor1 = Color.White;
-    private static readonly Color _backgroundColor2 = Color.LightGray;
-    private static readonly Color _overlayColor = Color.FromArgb(128, Color.MediumTurquoise);
-    private static readonly HatchStyle _backgroundStyle = HatchStyle.LargeGrid;
+    private static readonly Color BackgroundColor1 = Color.White;
+    private static readonly Color BackgroundColor2 = Color.LightGray;
+    private static readonly Color OverlayColor = Color.FromArgb(128, Color.MediumTurquoise);
+    private const HatchStyle BackgroundStyle = HatchStyle.LargeGrid;
 
-    private readonly int _zoomMin = 1;
-    private readonly int _zoomMax = 500;
-    private readonly int _zoomStep = 3;
-    private static int _zoomDefault = 100;
-    private static int _zoomCurrent = _zoomDefault; //AL. //TODO - make sure that when you set the zoom to the default that it's actually the picturebox width as a percentage of the actual image width. 
+    private const int ZoomMin = 1;
+    private const int ZoomMax = 500;
+    private const int ZoomStep = 3;
+    private const int ZoomDefault = 100;
+    private int _zoomCurrent = ZoomDefault; //AL. //TODO - make sure that when you set the zoom to the default that it's actually the picturebox width as a percentage of the actual image width. 
 
     private bool _isHovering;
     private bool _isDragging;
 
-    private static readonly HatchBrush _backgroundBrush = new HatchBrush(_backgroundStyle, _backgroundColor1, _backgroundColor2);
-    private readonly SolidBrush _overlayBrush = new SolidBrush(_overlayColor);
+    private static readonly HatchBrush BackgroundBrush = new HatchBrush(BackgroundStyle, BackgroundColor1, BackgroundColor2);
+    private readonly SolidBrush _overlayBrush = new SolidBrush(OverlayColor);
 
-    private readonly OpenFileDialog openFileDialog = new OpenFileDialog();
+    private readonly OpenFileDialog _openFileDialog = new OpenFileDialog();
 
-    private readonly ContextMenu contextMenu = new ContextMenu();
-    private readonly MenuItem menuItem_open = new MenuItem("Open");
-    private readonly MenuItem menuItem_copy = new MenuItem("Copy");
-    private readonly MenuItem menuItem_paste = new MenuItem("Paste");
-    private readonly MenuItem menuItem_recenter = new MenuItem("Recenter");
+    private readonly ContextMenu _contextMenu = new ContextMenu();
+    private readonly MenuItem _menuItemOpen = new MenuItem("Open");
+    private readonly MenuItem _menuItemCopy = new MenuItem("Copy");
+    private readonly MenuItem _menuItemPaste = new MenuItem("Paste");
+    private readonly MenuItem _menuItemRecenter = new MenuItem("Recenter");
 
     public Form1(string [] args)
     {
@@ -49,9 +49,9 @@ namespace FloatyImage
 
       SetupContextMenu();
 
-      openFileDialog.Multiselect = true;
+      _openFileDialog.Multiselect = true;
 
-      Text = _defaultTitle;
+      Text = DefaultTitle;
 
       if (args.Length == 0 || string.IsNullOrEmpty(args[0]))
       {
@@ -64,11 +64,13 @@ namespace FloatyImage
 
     private void Form1_Load(object sender, EventArgs e)
     {
-      pictureBox1.BackColor = Color.Transparent;
       DoubleBuffered = true;
       TopLevel = true;
       TopMost = true;
       AllowDrop = true;
+
+      pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+      pictureBox1.BackColor = Color.Transparent;
     }
 
     private void SetupEventHandlers()
@@ -86,8 +88,6 @@ namespace FloatyImage
       pictureBox1.MouseLeave += PictureBox1_MouseLeave;
       pictureBox1.MouseMove += PictureBox1_MouseMove;
 
-      pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-
       MouseWheel += PictureBox1_MouseWheel;
       DragEnter += Form1_DragEnter;
       DragDrop += Form1_DragDrop;
@@ -96,25 +96,25 @@ namespace FloatyImage
 
     private void SetupContextMenu()
     {
-      contextMenu.Popup += contextMenu_Opening;
+      _contextMenu.Popup += contextMenu_Opening;
 
-      menuItem_open.Click += ShowOpenDialog;
-      menuItem_copy.Click += Copy;
-      menuItem_paste.Click += Paste;
-      menuItem_recenter.Click += ResetPictureboxPosition;
+      _menuItemOpen.Click += ShowOpenDialog;
+      _menuItemCopy.Click += Copy;
+      _menuItemPaste.Click += Paste;
+      _menuItemRecenter.Click += ResetPictureboxPosition;
 
-      contextMenu.MenuItems.Add(menuItem_open);
-      contextMenu.MenuItems.Add(menuItem_copy);
-      contextMenu.MenuItems.Add(menuItem_paste);
-      contextMenu.MenuItems.Add(menuItem_recenter);
-      ContextMenu = contextMenu;     
+      _contextMenu.MenuItems.Add(_menuItemOpen);
+      _contextMenu.MenuItems.Add(_menuItemCopy);
+      _contextMenu.MenuItems.Add(_menuItemPaste);
+      _contextMenu.MenuItems.Add(_menuItemRecenter);
+      ContextMenu = _contextMenu;     
     }
 
     private void contextMenu_Opening(object sender, EventArgs e)
     {
-      menuItem_copy.Enabled = pictureBox1.Image == null ? false : true;
-      menuItem_paste.Enabled = Clipboard.ContainsImage();
-      menuItem_recenter.Enabled = pictureBox1.Image == null ? false : true;      
+      _menuItemCopy.Enabled = pictureBox1.Image == null ? false : true;
+      _menuItemPaste.Enabled = Clipboard.ContainsImage();
+      _menuItemRecenter.Enabled = pictureBox1.Image == null ? false : true;      
     }
 
     private void PaintBackground(object sender, PaintEventArgs e)
@@ -124,7 +124,7 @@ namespace FloatyImage
         return;
       }
 
-      e.Graphics.FillRectangle(_backgroundBrush, ClientRectangle);
+      e.Graphics.FillRectangle(BackgroundBrush, ClientRectangle);
     }
 
     private void PaintOverlay(object sender, PaintEventArgs e)
@@ -173,15 +173,15 @@ namespace FloatyImage
     {
       var oldZoom = _zoomCurrent;
 
-      _zoomCurrent += e.Delta > 0 ? _zoomStep : -_zoomStep;
+      _zoomCurrent += e.Delta > 0 ? ZoomStep : -ZoomStep;
       
-      if (_zoomCurrent < _zoomMin)
+      if (_zoomCurrent < ZoomMin)
       {
-        _zoomCurrent = _zoomMin;
+        _zoomCurrent = ZoomMin;
       }
-      else if (_zoomCurrent > _zoomMax)
+      else if (_zoomCurrent > ZoomMax)
       {
-        _zoomCurrent = _zoomMax;
+        _zoomCurrent = ZoomMax;
       }
 
       if (_zoomCurrent != oldZoom)
@@ -235,9 +235,9 @@ namespace FloatyImage
 
     private void ShowOpenDialog(object sender, EventArgs e)
     {
-      if (openFileDialog.ShowDialog() == DialogResult.OK)
+      if (_openFileDialog.ShowDialog() == DialogResult.OK)
       {
-        LoadNextFile(openFileDialog.FileNames);
+        LoadNextFile(_openFileDialog.FileNames.ToList());
       }
     }
 
@@ -247,9 +247,9 @@ namespace FloatyImage
       {
         Clipboard.SetImage(pictureBox1.Image);
       }
-      catch (Exception exception)
+      catch (Exception ex)
       {
-        Console.WriteLine(exception.ToString());
+        LogException(ex);
       }
     }
 
@@ -258,13 +258,13 @@ namespace FloatyImage
       try
       {
         var image = Clipboard.GetImage();
-        SetImage(image, _pastedImageTitle);
+        SetImage(image, PastedImageTitle);
         ResetPictureboxPosition();
       }
-      catch (Exception exception)
+      catch (Exception ex)
       {
-        Console.WriteLine(exception.ToString());
-      }     
+        LogException(ex);
+      }
     }
 
     private void ResetPictureboxPosition()
@@ -274,7 +274,7 @@ namespace FloatyImage
 
     private void ResetPictureboxPosition(object sender, EventArgs e)
     {
-      _zoomCurrent = _zoomDefault;
+      _zoomCurrent = ZoomDefault;
       pictureBox1.Left = 0;
       pictureBox1.Top = 0;
       UpdateImageSize();
@@ -296,11 +296,6 @@ namespace FloatyImage
       Refresh();
     }
 
-    private void LoadNextFile(string[] paths)
-    {
-      LoadNextFile(paths.ToList());
-    }
-
     private void LoadNextFile(List<string> paths)
     {
       var path = paths[0];
@@ -312,9 +307,9 @@ namespace FloatyImage
         var image = Image.FromFile(path);
         SetImage(image, title);
       }
-      catch (Exception exception)
+      catch (Exception ex)
       {
-        Console.WriteLine(exception.ToString());
+        LogException(ex);
       }
 
       paths.RemoveAt(0);
@@ -354,9 +349,9 @@ namespace FloatyImage
         p.StartInfo.CreateNoWindow = true;
         p.Start();
       }
-      catch (Exception exception)
+      catch (Exception ex)
       {
-        Console.WriteLine(exception.ToString());
+        LogException(ex);
       }
     }
 
@@ -389,6 +384,11 @@ namespace FloatyImage
       }
 
       return files;
+    }
+
+    private static void LogException(Exception ex)
+    {
+      Console.WriteLine(ex.ToString());
     }
   }
 }
