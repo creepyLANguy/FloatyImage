@@ -25,7 +25,7 @@ namespace FloatyImage
     private const int ZoomMax = 500;
     private const int ZoomStep = 3;
     private const int ZoomDefault = 100;
-    private int _zoomCurrent = ZoomDefault; //AL. //TODO - make sure that when you set the zoom to the default that it's actually the picturebox width as a percentage of the actual image width. 
+    private int _zoomCurrent = ZoomDefault; //AL. //TODO - make sure that when you set the zoom to the default that it's actually the pictureBox width as a percentage of the actual image width. 
 
     private bool _isHovering;
     private bool _isDragging;
@@ -101,7 +101,7 @@ namespace FloatyImage
       _menuItemOpen.Click += ShowOpenDialog;
       _menuItemCopy.Click += Copy;
       _menuItemPaste.Click += Paste;
-      _menuItemRecenter.Click += ResetPictureboxPosition;
+      _menuItemRecenter.Click += ResetPictureBoxPosition;
 
       _contextMenu.MenuItems.Add(_menuItemOpen);
       _contextMenu.MenuItems.Add(_menuItemCopy);
@@ -112,9 +112,10 @@ namespace FloatyImage
 
     private void contextMenu_Opening(object sender, EventArgs e)
     {
-      _menuItemCopy.Enabled = pictureBox1.Image == null ? false : true;
+      var hasImage = pictureBox1.Image != null;
+      _menuItemCopy.Enabled = hasImage;
       _menuItemPaste.Enabled = Clipboard.ContainsImage();
-      _menuItemRecenter.Enabled = pictureBox1.Image == null ? false : true;      
+      _menuItemRecenter.Enabled = hasImage;
     }
 
     private void PaintBackground(object sender, PaintEventArgs e)
@@ -259,7 +260,7 @@ namespace FloatyImage
       {
         var image = Clipboard.GetImage();
         SetImage(image, PastedImageTitle);
-        ResetPictureboxPosition();
+        ResetPictureBoxPosition();
       }
       catch (Exception ex)
       {
@@ -267,12 +268,7 @@ namespace FloatyImage
       }
     }
 
-    private void ResetPictureboxPosition()
-    {
-      ResetPictureboxPosition(null, null);
-    }
-
-    private void ResetPictureboxPosition(object sender, EventArgs e)
+    private void ResetPictureBoxPosition(object sender = null, EventArgs e = null)
     {
       _zoomCurrent = ZoomDefault;
       pictureBox1.Left = 0;
