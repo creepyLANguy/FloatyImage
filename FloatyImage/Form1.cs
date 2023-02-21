@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -12,7 +13,8 @@ namespace FloatyImage
 {
   public sealed partial class Form1 : Form
   {
-    private readonly string _defaultTitle = "(Drag an image file onto this window to begin)";
+    private readonly string _defaultTitle = "(Right click on canvas or drag on images/folders to begin)";
+    private readonly string _pastedImageTitle = "[Pasted Image]";
 
     private Point _mouseLocation;
     private readonly Color _backgroundColor1 = Color.White;
@@ -32,6 +34,12 @@ namespace FloatyImage
     private readonly HatchBrush _backgroundBrush;
     private readonly SolidBrush _overlayBrush;
 
+    private readonly ContextMenu contextMenu = new ContextMenu();
+    private readonly MenuItem menuItem_open = new MenuItem("Open");
+    private readonly MenuItem menuItem_copy = new MenuItem("Copy");
+    private readonly MenuItem menuItem_paste = new MenuItem("Paste");
+    private readonly MenuItem menuItem_recenter = new MenuItem("Recenter");
+
     public Form1(string [] args)
     {
       InitializeComponent();
@@ -39,10 +47,8 @@ namespace FloatyImage
       Load += Form1_Load;
       Paint += PaintOverlay;
       Paint += PaintBackground;
-      DoubleClick += ResetPictureboxPosition;
 
       pictureBox1.Paint += PaintOverlay;
-      pictureBox1.DoubleClick+= ResetPictureboxPosition;
       
       pictureBox1.MouseWheel += PictureBox1_MouseWheel;
       pictureBox1.MouseDown += PictureBox1_MouseDown;
@@ -52,6 +58,8 @@ namespace FloatyImage
       pictureBox1.MouseMove += PictureBox1_MouseMove;
       
       pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+
+      SetupContextMenu();      
 
       MouseWheel += PictureBox1_MouseWheel;
       DragEnter += Form1_DragEnter;
@@ -79,6 +87,29 @@ namespace FloatyImage
       TopLevel = true;
       TopMost = true;
       AllowDrop = true;
+    }
+
+    private void SetupContextMenu()
+    {
+      contextMenu.Popup += contextMenu_Opening;
+
+      menuItem_open.Click += ShowOpenDialog;
+      menuItem_copy.Click += Copy;
+      menuItem_paste.Click += Paste;
+      menuItem_recenter.Click += ResetPictureboxPosition;
+
+      contextMenu.MenuItems.Add(menuItem_open);
+      contextMenu.MenuItems.Add(menuItem_copy);
+      contextMenu.MenuItems.Add(menuItem_paste);
+      contextMenu.MenuItems.Add(menuItem_recenter);
+      ContextMenu = contextMenu;     
+    }
+
+    private void contextMenu_Opening(object sender, EventArgs e)
+    {
+      menuItem_copy.Enabled = pictureBox1.Image == null ? false : true;
+      menuItem_paste.Enabled = Clipboard.ContainsImage();
+      menuItem_recenter.Enabled = pictureBox1.Image == null ? false : true;      
     }
 
     private void PaintBackground(object sender, PaintEventArgs e)
@@ -197,6 +228,43 @@ namespace FloatyImage
       pictureBox1.Cursor = Cursors.Default;
     }
 
+    private void ShowOpenDialog(object sender, EventArgs e)
+    {
+      //AL. 
+      //TODO - implement       
+    }
+
+    private void Copy(object sender, EventArgs e)
+    {
+      try
+      {
+        Clipboard.SetImage(pictureBox1.Image);
+      }
+      catch (Exception exception)
+      {
+        Console.WriteLine(exception.ToString());
+      }
+    }
+
+    private void Paste(object sender, EventArgs e)
+    {
+      try
+      {
+        var image = Clipboard.GetImage();
+        SetImage(image, _pastedImageTitle);
+        ResetPictureboxPosition();
+      }
+      catch (Exception exception)
+      {
+        Console.WriteLine(exception.ToString());
+      }     
+    }
+
+    private void ResetPictureboxPosition()
+    {
+      ResetPictureboxPosition(null, null);
+    }
+
     private void ResetPictureboxPosition(object sender, EventArgs e)
     {
       _zoomCurrent = _zoomDefault;
@@ -225,19 +293,16 @@ namespace FloatyImage
     {
       var path = paths[0];
 
-      Text = path.Substring(path.LastIndexOf('\\') + 1);
+      var title = path.Substring(path.LastIndexOf('\\') + 1);
 
       try
       {
         var image = Image.FromFile(path);
-        pictureBox1.Image = image;
-
-        var bmp = (Bitmap)image;
-        Icon = Icon.FromHandle(bmp.GetHicon());
+        SetImage(image, title);
       }
-      catch (Exception e)
+      catch (Exception exception)
       {
-        Console.WriteLine(e);
+        Console.WriteLine(exception.ToString());
       }
 
       paths.RemoveAt(0);
@@ -245,6 +310,16 @@ namespace FloatyImage
       {
         LaunchNextInstance(paths);
       }
+    }
+
+    private void SetImage(Image image, string title)
+    {
+      Text = title;
+
+      pictureBox1.Image = image;
+
+      var bmp = (Bitmap)image;
+      Icon = Icon.FromHandle(bmp.GetHicon());
     }
     
     private static void LaunchNextInstance(List<string> paths)
@@ -267,9 +342,9 @@ namespace FloatyImage
         p.StartInfo.CreateNoWindow = true;
         p.Start();
       }
-      catch (Exception e)
+      catch (Exception exception)
       {
-        Console.WriteLine(e.Message);
+        Console.WriteLine(exception.ToString());
       }
     }
 
@@ -303,5 +378,10 @@ namespace FloatyImage
 
       return files;
     }
-  }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+    }
 }
