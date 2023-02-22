@@ -96,7 +96,7 @@ namespace FloatyImage
 
     private void SetupContextMenu()
     {
-      _contextMenu.Popup += contextMenu_Opening;
+      _contextMenu.Popup += ContextMenu_Opening;
 
       _menuItemOpen.Click += ShowOpenDialog;
       _menuItemCopy.Click += Copy;
@@ -110,7 +110,7 @@ namespace FloatyImage
       ContextMenu = _contextMenu;     
     }
 
-    private void contextMenu_Opening(object sender, EventArgs e)
+    private void ContextMenu_Opening(object sender, EventArgs e)
     {
       var hasImage = pictureBox1.Image != null;
       _menuItemCopy.Enabled = hasImage;
