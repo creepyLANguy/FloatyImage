@@ -24,8 +24,7 @@ namespace FloatyImage
     private const int ZoomMin = 1;
     private const int ZoomMax = 500;
     private const int ZoomStep = 3;
-    private const int ZoomDefault = 100;
-    private int _zoomCurrent = ZoomDefault; //AL. //TODO - make sure that when you set the zoom to the default that it's actually the pictureBox width as a percentage of the actual image width. 
+    private int _zoomCurrent;
 
     private bool _isHovering;
     private bool _isDragging;
@@ -187,7 +186,7 @@ namespace FloatyImage
 
       if (_zoomCurrent != oldZoom)
       {
-        UpdateImageSize();
+        ZoomImage();
       }
     }
 
@@ -270,14 +269,15 @@ namespace FloatyImage
 
     private void ResetPictureBoxPosition(object sender = null, EventArgs e = null)
     {
-      _zoomCurrent = ZoomDefault;
+      _zoomCurrent = 100;
       pictureBox1.Left = 0;
       pictureBox1.Top = 0;
-      UpdateImageSize();
+      pictureBox1.Width = pictureBox1.Image.Width;
+      pictureBox1.Height = pictureBox1.Image.Height;
       Refresh();
     }
 
-    private void UpdateImageSize()
+    private void ZoomImage()
     {
       if (pictureBox1.Image == null)
       {
@@ -321,6 +321,8 @@ namespace FloatyImage
       {
         Close();
       }
+
+      StoreCurrentZoomValue();
     }
 
     private void SetImage(Image image, string title)
@@ -332,7 +334,13 @@ namespace FloatyImage
       var bmp = (Bitmap)image;
       Icon = Icon.FromHandle(bmp.GetHicon());
     }
-    
+
+    private void StoreCurrentZoomValue()
+    {
+      var zoomRatio = (double) pictureBox1.ClientSize.Height / pictureBox1.Image.Height;
+      _zoomCurrent = (int) (zoomRatio * 100);
+    }
+
     private static void LaunchNextInstance(List<string> paths)
     {
       var args = "";
