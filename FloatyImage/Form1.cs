@@ -121,6 +121,7 @@ namespace FloatyImage
       _contextMenu.MenuItems.Add(_menuItemPaste);
       _contextMenu.MenuItems.Add(_menuItemDivider);
       _contextMenu.MenuItems.Add(_menuItemRecenter);
+      _contextMenu.MenuItems.Add(_menuItemLock);
 
       ContextMenu = _contextMenu;     
     }
