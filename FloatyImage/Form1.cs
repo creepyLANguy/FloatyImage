@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using static System.Reflection.Assembly;
 
@@ -28,11 +29,17 @@ namespace FloatyImage
     private const int ZoomStep = 3;
     private int _zoomCurrent;
 
+    private const int FadeIntervalMilliseconds = 10;
+    private const double FadeOpacityStep = 0.1;
+    private const double FadeFloor = 0.2;
+    private const double FadeCeiling = 0.3;
+
     private Point _mouseLocation;
 
     private bool _isHovering;
     private bool _isDragging;
-    
+
+    private int _borderWidth;
     private int _titlebarHeight;
     private bool _isTitlebarHidden;
 
@@ -72,6 +79,7 @@ namespace FloatyImage
     {
       var screenRectangle = RectangleToScreen(ClientRectangle);
       _titlebarHeight = screenRectangle.Top - Top;
+      _borderWidth = (screenRectangle.Left - Left);
 
       DoubleBuffered = true;
       TopLevel = true;
@@ -159,22 +167,46 @@ namespace FloatyImage
 
     private void ToggleTitlebar(object sender, EventArgs e)
     {
+      FadeOut();
+
       if (_isTitlebarHidden)
       {
         _contextMenu.MenuItems.Remove(_menuItemUnlock);
         _contextMenu.MenuItems.Add(_menuItemLock);
         FormBorderStyle = FormBorderStyle.Sizable;
-        Location = new Point(Location.X, Location.Y - _titlebarHeight);
+        Location = new Point(Location.X - _borderWidth, Location.Y - _titlebarHeight);
       }
       else
       {
         _contextMenu.MenuItems.Remove(_menuItemLock);
         _contextMenu.MenuItems.Add(_menuItemUnlock);
         FormBorderStyle = FormBorderStyle.None;
-        Location = new Point(Location.X, Location.Y + _titlebarHeight);
+        Location = new Point(Location.X + _borderWidth, Location.Y + _titlebarHeight);
       }
 
       _isTitlebarHidden = !_isTitlebarHidden;
+
+      FadeIn();
+    }
+
+    private void FadeOut()
+    {
+      while (Opacity > FadeFloor)
+      {
+        Thread.Sleep(FadeIntervalMilliseconds);
+        Opacity -= FadeOpacityStep;
+      }
+      Opacity = 0;     
+    }
+
+    private void FadeIn()
+    {
+      while (Opacity < FadeCeiling)
+      {
+        Thread.Sleep(FadeIntervalMilliseconds);
+        Opacity += FadeOpacityStep;
+      }
+      Opacity = 1;
     }
 
     private void Form1_DragEnter(object sender, DragEventArgs e)
