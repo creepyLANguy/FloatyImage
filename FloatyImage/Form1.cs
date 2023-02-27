@@ -15,31 +15,38 @@ namespace FloatyImage
     private const string DefaultTitle = "(Right click on canvas or drag on images/folders to begin)";
     private const string PastedImageTitle = "[Pasted Image]";
 
-    private Point _mouseLocation;
     private static readonly Color BackgroundColor1 = Color.White;
     private static readonly Color BackgroundColor2 = Color.LightGray;
-    private static readonly Color OverlayColor = Color.FromArgb(128, Color.MediumTurquoise);
     private const HatchStyle BackgroundStyle = HatchStyle.LargeGrid;
-
+    private static readonly Color OverlayColor = Color.FromArgb(128, Color.MediumTurquoise);
+    
+    private static readonly HatchBrush BackgroundBrush = new HatchBrush(BackgroundStyle, BackgroundColor1, BackgroundColor2);
+    private readonly SolidBrush _overlayBrush = new SolidBrush(OverlayColor);
+    
     private const int ZoomMin = 1;
     private const int ZoomMax = 500;
     private const int ZoomStep = 3;
     private int _zoomCurrent;
 
+    private Point _mouseLocation;
+
     private bool _isHovering;
     private bool _isDragging;
-
-    private static readonly HatchBrush BackgroundBrush = new HatchBrush(BackgroundStyle, BackgroundColor1, BackgroundColor2);
-    private readonly SolidBrush _overlayBrush = new SolidBrush(OverlayColor);
+    
+    private int _titlebarHeight;
+    private bool _isTitlebarHidden;
 
     private readonly OpenFileDialog _openFileDialog = new OpenFileDialog();
 
     private readonly ContextMenu _contextMenu = new ContextMenu();
+    private readonly MenuItem _menuItemDivider = new MenuItem("-");
     private readonly MenuItem _menuItemOpen = new MenuItem("Open");
     private readonly MenuItem _menuItemCopy = new MenuItem("Copy");
     private readonly MenuItem _menuItemPaste = new MenuItem("Paste");
     private readonly MenuItem _menuItemRecenter = new MenuItem("Recenter");
-
+    private readonly MenuItem _menuItemLock = new MenuItem("Lock");
+    private readonly MenuItem _menuItemUnlock = new MenuItem("Unlock");
+    
     public Form1(string [] args)
     {
       InitializeComponent();
@@ -63,6 +70,9 @@ namespace FloatyImage
 
     private void Form1_Load(object sender, EventArgs e)
     {
+      var screenRectangle = RectangleToScreen(ClientRectangle);
+      _titlebarHeight = screenRectangle.Top - Top;
+
       DoubleBuffered = true;
       TopLevel = true;
       TopMost = true;
@@ -80,17 +90,19 @@ namespace FloatyImage
 
       pictureBox1.Paint += PaintOverlay;
 
+      DoubleClick += ToggleTitlebar;
+      MouseWheel += PictureBox1_MouseWheel;
+      DragEnter += Form1_DragEnter;
+      DragDrop += Form1_DragDrop;
+      DragLeave += Form1_DragLeave;
+
+      pictureBox1.DoubleClick += ToggleTitlebar;
       pictureBox1.MouseWheel += PictureBox1_MouseWheel;
       pictureBox1.MouseDown += PictureBox1_MouseDown;
       pictureBox1.MouseUp += PictureBox1_MouseUp;
       pictureBox1.MouseEnter += PictureBox1_MouseEnter;
       pictureBox1.MouseLeave += PictureBox1_MouseLeave;
       pictureBox1.MouseMove += PictureBox1_MouseMove;
-
-      MouseWheel += PictureBox1_MouseWheel;
-      DragEnter += Form1_DragEnter;
-      DragDrop += Form1_DragDrop;
-      DragLeave += Form1_DragLeave;
     }
 
     private void SetupContextMenu()
@@ -101,11 +113,15 @@ namespace FloatyImage
       _menuItemCopy.Click += Copy;
       _menuItemPaste.Click += Paste;
       _menuItemRecenter.Click += ResetPictureBoxPosition;
+      _menuItemLock.Click += ToggleTitlebar;
+      _menuItemUnlock.Click += ToggleTitlebar;
 
       _contextMenu.MenuItems.Add(_menuItemOpen);
       _contextMenu.MenuItems.Add(_menuItemCopy);
       _contextMenu.MenuItems.Add(_menuItemPaste);
+      _contextMenu.MenuItems.Add(_menuItemDivider);
       _contextMenu.MenuItems.Add(_menuItemRecenter);
+
       ContextMenu = _contextMenu;     
     }
 
@@ -138,6 +154,26 @@ namespace FloatyImage
       {
         e.Graphics.FillRectangle(_overlayBrush, new Rectangle(Point.Empty, control.Size));
       }
+    }
+
+    private void ToggleTitlebar(object sender, EventArgs e)
+    {
+      if (_isTitlebarHidden)
+      {
+        _contextMenu.MenuItems.Remove(_menuItemUnlock);
+        _contextMenu.MenuItems.Add(_menuItemLock);
+        FormBorderStyle = FormBorderStyle.Sizable;
+        Location = new Point(Location.X, Location.Y - _titlebarHeight);
+      }
+      else
+      {
+        _contextMenu.MenuItems.Remove(_menuItemLock);
+        _contextMenu.MenuItems.Add(_menuItemUnlock);
+        FormBorderStyle = FormBorderStyle.None;
+        Location = new Point(Location.X, Location.Y + _titlebarHeight);
+      }
+
+      _isTitlebarHidden = !_isTitlebarHidden;
     }
 
     private void Form1_DragEnter(object sender, DragEventArgs e)
@@ -320,6 +356,7 @@ namespace FloatyImage
       if (failedToLoad)
       {
         Close();
+        return;
       }
 
       StoreCurrentZoomValue();
