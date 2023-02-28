@@ -46,10 +46,12 @@ namespace FloatyImage
     private readonly OpenFileDialog _openFileDialog = new OpenFileDialog();
 
     private readonly ContextMenu _contextMenu = new ContextMenu();
-    private readonly MenuItem _menuItemDivider = new MenuItem("-");
     private readonly MenuItem _menuItemOpen = new MenuItem("Open");
+    private readonly MenuItem _menuItemDivider1 = new MenuItem("-");
+    private readonly MenuItem _menuItemCut = new MenuItem("Cut");
     private readonly MenuItem _menuItemCopy = new MenuItem("Copy");
     private readonly MenuItem _menuItemPaste = new MenuItem("Paste");
+    private readonly MenuItem _menuItemDivider2 = new MenuItem("-");
     private readonly MenuItem _menuItemRecenter = new MenuItem("Recenter");
     private readonly MenuItem _menuItemLock = new MenuItem("Lock");
     private readonly MenuItem _menuItemUnlock = new MenuItem("Unlock");
@@ -118,6 +120,7 @@ namespace FloatyImage
       _contextMenu.Popup += ContextMenu_Opening;
 
       _menuItemOpen.Click += ShowOpenDialog;
+      _menuItemCut.Click += Cut;
       _menuItemCopy.Click += Copy;
       _menuItemPaste.Click += Paste;
       _menuItemRecenter.Click += ResetPictureBoxPosition;
@@ -125,9 +128,11 @@ namespace FloatyImage
       _menuItemUnlock.Click += ToggleTitlebar;
 
       _contextMenu.MenuItems.Add(_menuItemOpen);
+      _contextMenu.MenuItems.Add(_menuItemDivider1);
+      _contextMenu.MenuItems.Add(_menuItemCut);
       _contextMenu.MenuItems.Add(_menuItemCopy);
       _contextMenu.MenuItems.Add(_menuItemPaste);
-      _contextMenu.MenuItems.Add(_menuItemDivider);
+      _contextMenu.MenuItems.Add(_menuItemDivider2);
       _contextMenu.MenuItems.Add(_menuItemRecenter);
       _contextMenu.MenuItems.Add(_menuItemLock);
 
@@ -137,6 +142,7 @@ namespace FloatyImage
     private void ContextMenu_Opening(object sender, EventArgs e)
     {
       var hasImage = pictureBox1.Image != null;
+      _menuItemCut.Enabled = hasImage;
       _menuItemCopy.Enabled = hasImage;
       _menuItemPaste.Enabled = Clipboard.ContainsImage();
       _menuItemRecenter.Enabled = hasImage;
@@ -310,6 +316,21 @@ namespace FloatyImage
       }
     }
 
+    private void Cut(object sender, EventArgs e)
+    {
+      try
+      {
+        Clipboard.SetImage(pictureBox1.Image);
+        Text = null;
+        pictureBox1.Image = null;
+        Icon = null;
+      }
+      catch (Exception ex)
+      {
+        LogException(ex);
+      }
+    }
+    
     private void Copy(object sender, EventArgs e)
     {
       try
