@@ -16,6 +16,9 @@ namespace FloatyImage
     private const string DefaultTitle = "(Right click on canvas or drag on images/folders to begin)";
     private const string PastedImageTitle = "[Pasted Image]";
 
+    private const string LockString = "Lock";
+    private const string UnlockString = "Unlock";
+
     private readonly Icon DefaultIcon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
 
     private static readonly Color BackgroundColor1 = Color.White;
@@ -56,8 +59,7 @@ namespace FloatyImage
     private readonly MenuItem _menuItemCopy = new MenuItem("Copy");
     private readonly MenuItem _menuItemPaste = new MenuItem("Paste");
     private readonly MenuItem _menuItemRecenter = new MenuItem("Recenter");
-    private readonly MenuItem _menuItemLock = new MenuItem("Lock");
-    private readonly MenuItem _menuItemUnlock = new MenuItem("Unlock");
+    private readonly MenuItem _menuItemToggleLock = new MenuItem(LockString);
     private readonly MenuItem _menuItemColour_hex = new MenuItem();
     private readonly MenuItem _menuItemColour_rgb = new MenuItem();
     
@@ -132,8 +134,7 @@ namespace FloatyImage
       _menuItemCopy.Click += Copy;
       _menuItemPaste.Click += Paste;
       _menuItemRecenter.Click += ResetPictureBoxPosition;
-      _menuItemLock.Click += ToggleTitlebar;
-      _menuItemUnlock.Click += ToggleTitlebar;
+      _menuItemToggleLock.Click += ToggleTitlebar;
       _menuItemColour_hex.Click += CopyTextToClipboard;
       _menuItemColour_rgb.Click += CopyTextToClipboard;
 
@@ -144,7 +145,7 @@ namespace FloatyImage
       _contextMenu.MenuItems.Add(_menuItemPaste);
       _contextMenu.MenuItems.Add(new MenuItem("-"));
       _contextMenu.MenuItems.Add(_menuItemRecenter);
-      _contextMenu.MenuItems.Add(_menuItemLock);
+      _contextMenu.MenuItems.Add(_menuItemToggleLock);
       _contextMenu.MenuItems.Add(new MenuItem("-"));
       _contextMenu.MenuItems.Add(_menuItemColour_hex);
       _contextMenu.MenuItems.Add(_menuItemColour_rgb);
@@ -205,20 +206,27 @@ namespace FloatyImage
 
       if (_isTitlebarHidden)
       {
-        _contextMenu.MenuItems.Remove(_menuItemUnlock);
-        _contextMenu.MenuItems.Add(_menuItemLock);
+        _menuItemToggleLock.Text = LockString;
         FormBorderStyle = FormBorderStyle.Sizable;
         Location = new Point(Location.X - _borderWidth, Location.Y - _titlebarHeight);
       }
       else
       {
-        _contextMenu.MenuItems.Remove(_menuItemLock);
-        _contextMenu.MenuItems.Add(_menuItemUnlock);
+        _menuItemToggleLock.Text = UnlockString;
         FormBorderStyle = FormBorderStyle.None;
         Location = new Point(Location.X + _borderWidth, Location.Y + _titlebarHeight);
       }
 
       _isTitlebarHidden = !_isTitlebarHidden;
+
+      if (pictureBox1.Left != cachedPictureBoxPos_x)
+      {
+        pictureBox1.Left = cachedPictureBoxPos_x;
+      }
+      if (pictureBox1.Top != cachedPictureBoxPos_y)
+      {
+        pictureBox1.Top = cachedPictureBoxPos_y;
+      }
 
       FadeIn();
     }
@@ -311,12 +319,30 @@ namespace FloatyImage
 
     private void Form1_Resize(object sender, EventArgs e)
     {
-      pictureBox1.Left = cachedPictureBoxPos_x;
-      pictureBox1.Top = cachedPictureBoxPos_y;
+      //We are prolly toggling lock state
+      if (Opacity != 1)
+      {
+        return;
+      }
+
+      if (pictureBox1.Left != cachedPictureBoxPos_x)
+      {
+        pictureBox1.Left = cachedPictureBoxPos_x;
+      }
+      if (pictureBox1.Top != cachedPictureBoxPos_y)
+      {
+        pictureBox1.Top = cachedPictureBoxPos_y;
+      }
     }
     
     private void Form1_ResizeBegin(object sender, EventArgs e)
     {
+      //We are prolly toggling lock state
+      if (Opacity != 1)
+      {
+        return;
+      }
+
       cachedPictureBoxPos_x = pictureBox1.Left;
       cachedPictureBoxPos_y = pictureBox1.Top;     
     }
@@ -351,6 +377,8 @@ namespace FloatyImage
     private void PictureBox1_MouseUp(object sender, MouseEventArgs e)
     {
       _isDragging = false;
+      cachedPictureBoxPos_x = pictureBox1.Left;
+      cachedPictureBoxPos_y = pictureBox1.Top;
     }
 
     private void PictureBox1_MouseMove(object sender, MouseEventArgs e)
