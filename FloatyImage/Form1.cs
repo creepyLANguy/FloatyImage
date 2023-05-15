@@ -45,6 +45,9 @@ namespace FloatyImage
     private int _titlebarHeight;
     private bool _isTitlebarHidden;
 
+    private int cachedPictureBoxPos_x = 0;
+    private int cachedPictureBoxPos_y = 0;
+
     private readonly OpenFileDialog _openFileDialog = new OpenFileDialog();
 
     private readonly ContextMenu _contextMenu = new ContextMenu();
@@ -108,6 +111,8 @@ namespace FloatyImage
       DragDrop += Form1_DragDrop;
       DragLeave += Form1_DragLeave;
       KeyDown += Form1_KeyDown;
+      Resize += Form1_Resize;
+      ResizeBegin += Form1_ResizeBegin;
 
       pictureBox1.DoubleClick += ToggleTitlebar;
       pictureBox1.MouseWheel += PictureBox1_MouseWheel;
@@ -277,6 +282,18 @@ namespace FloatyImage
         default:
           break;
       }
+    }
+
+    private void Form1_Resize(object sender, EventArgs e)
+    {
+      pictureBox1.Left = cachedPictureBoxPos_x;
+      pictureBox1.Top = cachedPictureBoxPos_y;
+    }
+    
+    private void Form1_ResizeBegin(object sender, EventArgs e)
+    {
+      cachedPictureBoxPos_x = pictureBox1.Left;
+      cachedPictureBoxPos_y = pictureBox1.Top;     
     }
 
     private void PictureBox1_MouseWheel(object sender, MouseEventArgs e)
