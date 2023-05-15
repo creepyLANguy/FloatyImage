@@ -16,6 +16,8 @@ namespace FloatyImage
     private const string DefaultTitle = "(Right click on canvas or drag on images/folders to begin)";
     private const string PastedImageTitle = "[Pasted Image]";
 
+    private readonly Icon DefaultIcon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+
     private static readonly Color BackgroundColor1 = Color.White;
     private static readonly Color BackgroundColor2 = Color.LightGray;
     private const HatchStyle BackgroundStyle = HatchStyle.LargeGrid;
@@ -105,6 +107,7 @@ namespace FloatyImage
       DragEnter += Form1_DragEnter;
       DragDrop += Form1_DragDrop;
       DragLeave += Form1_DragLeave;
+      KeyDown += Form1_KeyDown;
 
       pictureBox1.DoubleClick += ToggleTitlebar;
       pictureBox1.MouseWheel += PictureBox1_MouseWheel;
@@ -244,6 +247,38 @@ namespace FloatyImage
       LoadNextFile(files);
     }
 
+    private void Form1_KeyDown(object sender, KeyEventArgs e)
+    {
+      if (e.Control == false)
+      {
+        return;
+      }
+
+      switch (e.KeyCode)
+      {
+        case Keys.V:
+          Paste(sender, e); Copy(sender, e);
+          break;
+        case Keys.C: 
+          Copy(sender, e);
+          break;
+        case Keys.X:
+          Cut(sender, e);
+          break;
+        case Keys.O:
+          ShowOpenDialog(sender, e);
+          break;
+        case Keys.L:
+          ToggleTitlebar(sender, e);
+          break;
+        case Keys.R:
+          ResetPictureBoxPosition(sender, e);
+          break;
+        default:
+          break;
+      }
+    }
+
     private void PictureBox1_MouseWheel(object sender, MouseEventArgs e)
     {
       var oldZoom = _zoomCurrent;
@@ -318,12 +353,17 @@ namespace FloatyImage
 
     private void Cut(object sender, EventArgs e)
     {
+      if (pictureBox1.Image == null)
+      {
+        return;
+      }
+
       try
       {
         Clipboard.SetImage(pictureBox1.Image);
-        Text = null;
+        Text = DefaultTitle;
         pictureBox1.Image = null;
-        Icon = null;
+        Icon = DefaultIcon;
       }
       catch (Exception ex)
       {
@@ -333,6 +373,11 @@ namespace FloatyImage
     
     private void Copy(object sender, EventArgs e)
     {
+      if (pictureBox1.Image == null)
+      {
+        return;
+      }
+
       try
       {
         Clipboard.SetImage(pictureBox1.Image);
@@ -347,6 +392,11 @@ namespace FloatyImage
     {
       try
       {
+        if (Clipboard.ContainsImage() == false)
+        {
+          return;
+        }
+
         var image = Clipboard.GetImage();
         SetImage(image, PastedImageTitle);
         ResetPictureBoxPosition();
