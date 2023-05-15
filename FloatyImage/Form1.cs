@@ -52,14 +52,14 @@ namespace FloatyImage
 
     private readonly ContextMenu _contextMenu = new ContextMenu();
     private readonly MenuItem _menuItemOpen = new MenuItem("Open");
-    private readonly MenuItem _menuItemDivider1 = new MenuItem("-");
     private readonly MenuItem _menuItemCut = new MenuItem("Cut");
     private readonly MenuItem _menuItemCopy = new MenuItem("Copy");
     private readonly MenuItem _menuItemPaste = new MenuItem("Paste");
-    private readonly MenuItem _menuItemDivider2 = new MenuItem("-");
     private readonly MenuItem _menuItemRecenter = new MenuItem("Recenter");
     private readonly MenuItem _menuItemLock = new MenuItem("Lock");
     private readonly MenuItem _menuItemUnlock = new MenuItem("Unlock");
+    private readonly MenuItem _menuItemColour_hex = new MenuItem();
+    private readonly MenuItem _menuItemColour_rgb = new MenuItem();
     
     public Form1(string [] args)
     {
@@ -134,15 +134,20 @@ namespace FloatyImage
       _menuItemRecenter.Click += ResetPictureBoxPosition;
       _menuItemLock.Click += ToggleTitlebar;
       _menuItemUnlock.Click += ToggleTitlebar;
+      _menuItemColour_hex.Click += CopyTextToClipboard;
+      _menuItemColour_rgb.Click += CopyTextToClipboard;
 
       _contextMenu.MenuItems.Add(_menuItemOpen);
-      _contextMenu.MenuItems.Add(_menuItemDivider1);
+      _contextMenu.MenuItems.Add(new MenuItem("-"));
       _contextMenu.MenuItems.Add(_menuItemCut);
       _contextMenu.MenuItems.Add(_menuItemCopy);
       _contextMenu.MenuItems.Add(_menuItemPaste);
-      _contextMenu.MenuItems.Add(_menuItemDivider2);
+      _contextMenu.MenuItems.Add(new MenuItem("-"));
       _contextMenu.MenuItems.Add(_menuItemRecenter);
       _contextMenu.MenuItems.Add(_menuItemLock);
+      _contextMenu.MenuItems.Add(new MenuItem("-"));
+      _contextMenu.MenuItems.Add(_menuItemColour_hex);
+      _contextMenu.MenuItems.Add(_menuItemColour_rgb);
 
       ContextMenu = _contextMenu;     
     }
@@ -154,6 +159,21 @@ namespace FloatyImage
       _menuItemCopy.Enabled = hasImage;
       _menuItemPaste.Enabled = Clipboard.ContainsImage();
       _menuItemRecenter.Enabled = hasImage;
+
+      DisplayCurrentPixelColour();
+    }
+
+    private void DisplayCurrentPixelColour()
+    {
+      var bitmap = new Bitmap(ClientSize.Width, ClientSize.Height);
+      DrawToBitmap(bitmap, ClientRectangle);
+
+      var clientCursorPos = PointToClient(Cursor.Position);
+      var colour = bitmap.GetPixel(clientCursorPos.X, clientCursorPos.Y);
+      string hex = string.Format("{0:X2}{1:X2}{2:X2}", colour.R, colour.G, colour.B);
+      var rgb = string.Format("{0},{1},{2}", colour.R, colour.G, colour.B);
+      _menuItemColour_hex.Text = hex;
+      _menuItemColour_rgb.Text = rgb;
     }
 
     private void PaintBackground(object sender, PaintEventArgs e)
@@ -221,6 +241,11 @@ namespace FloatyImage
         Opacity += FadeOpacityStep;
       }
       Opacity = 1;
+    }
+
+    private void CopyTextToClipboard(object sender, EventArgs e)
+    {
+      Clipboard.SetText(((MenuItem)sender).Text);
     }
 
     private void Form1_DragEnter(object sender, DragEventArgs e)
