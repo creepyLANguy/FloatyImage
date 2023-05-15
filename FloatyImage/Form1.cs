@@ -330,14 +330,17 @@ namespace FloatyImage
 
     private void PictureBox1_MouseMove(object sender, MouseEventArgs e)
     {
-      if (pictureBox1.Image == null || _isDragging == false)
+      if (pictureBox1.Image == null)
       {
         return;
       }
-
-      pictureBox1.Left += e.X - _mouseLocation.X;
-      pictureBox1.Top += e.Y - _mouseLocation.Y;
-      Refresh();
+      
+      if (_isDragging)
+      {
+        pictureBox1.Left += e.X - _mouseLocation.X;
+        pictureBox1.Top += e.Y - _mouseLocation.Y;
+        Refresh();
+      }
     }    
     
     private void PictureBox1_MouseEnter(object sender, EventArgs e)
