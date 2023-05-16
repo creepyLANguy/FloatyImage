@@ -60,6 +60,7 @@ namespace FloatyImage
     private readonly MenuItem _menuItemPaste = new MenuItem("Paste");
     private readonly MenuItem _menuItemRecenter = new MenuItem("Recenter");
     private readonly MenuItem _menuItemToggleLock = new MenuItem(LockString);
+    private readonly MenuItem _menuItemColour_divider = new MenuItem("-");
     private readonly MenuItem _menuItemColour_hex = new MenuItem();
     private readonly MenuItem _menuItemColour_rgb = new MenuItem();
     
@@ -97,13 +98,16 @@ namespace FloatyImage
 
       pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
       pictureBox1.BackColor = Color.Transparent;
+
+      btn_colour.Enabled = false;
+      btn_colour.Visible = false;
     }
 
     private void SetupEventHandlers()
     {
       Load += Form1_Load;
       Paint += PaintOverlay;
-      Paint += PaintBackground;
+      Paint += PaintBackground;      
 
       pictureBox1.Paint += PaintOverlay;
 
@@ -128,6 +132,7 @@ namespace FloatyImage
     private void SetupContextMenu()
     {
       _contextMenu.Popup += ContextMenu_Opening;
+      _contextMenu.Collapse += ContextMenu_Closing;
 
       _menuItemOpen.Click += ShowOpenDialog;
       _menuItemCut.Click += Cut;
@@ -146,7 +151,7 @@ namespace FloatyImage
       _contextMenu.MenuItems.Add(new MenuItem("-"));
       _contextMenu.MenuItems.Add(_menuItemRecenter);
       _contextMenu.MenuItems.Add(_menuItemToggleLock);
-      _contextMenu.MenuItems.Add(new MenuItem("-"));
+      _contextMenu.MenuItems.Add(_menuItemColour_divider);
       _contextMenu.MenuItems.Add(_menuItemColour_hex);
       _contextMenu.MenuItems.Add(_menuItemColour_rgb);
 
@@ -164,17 +169,52 @@ namespace FloatyImage
       DisplayCurrentPixelColour();
     }
 
+    private void ContextMenu_Closing(object sender, EventArgs e)
+    {
+      btn_colour.Visible = false;
+    }
+
     private void DisplayCurrentPixelColour()
     {
       var bitmap = new Bitmap(ClientSize.Width, ClientSize.Height);
       DrawToBitmap(bitmap, ClientRectangle);
 
-      var clientCursorPos = PointToClient(Cursor.Position);
-      var colour = bitmap.GetPixel(clientCursorPos.X, clientCursorPos.Y);
-      string hex = string.Format("{0:X2}{1:X2}{2:X2}", colour.R, colour.G, colour.B);
-      var rgb = string.Format("{0},{1},{2}", colour.R, colour.G, colour.B);
-      _menuItemColour_hex.Text = hex;
-      _menuItemColour_rgb.Text = rgb;
+      var screenCursorPos = PointToScreen(Cursor.Position);
+
+      var windowRect = new Rectangle(Location, Size);
+      var screenWindowPos = PointToScreen(windowRect.Location);
+
+      var clientCursorPos = new Point(
+          screenCursorPos.X - screenWindowPos.X,
+          screenCursorPos.Y - screenWindowPos.Y
+      );
+
+      try
+      {
+        var colour = bitmap.GetPixel(clientCursorPos.X, clientCursorPos.Y);
+
+        btn_colour.BackColor = colour;
+        var cursorPos = PointToClient(Cursor.Position);
+        btn_colour.Location = new Point(cursorPos.X - btn_colour.Width, cursorPos.Y - btn_colour.Height);
+        btn_colour.Visible = true;
+
+        string hex = string.Format("{0:X2}{1:X2}{2:X2}", colour.R, colour.G, colour.B);
+        var rgb = string.Format("{0},{1},{2}", colour.R, colour.G, colour.B);
+        
+        _menuItemColour_hex.Text = hex;
+        _menuItemColour_rgb.Text = rgb;
+
+        _menuItemColour_divider.Visible = true;
+        _menuItemColour_hex.Visible = true;
+        _menuItemColour_rgb.Visible = true;
+      }
+      catch (Exception)
+      {
+        btn_colour.Visible = false;
+        _menuItemColour_divider.Visible = false;
+        _menuItemColour_hex.Visible = false;
+        _menuItemColour_rgb.Visible = false;
+      }
     }
 
     private void PaintBackground(object sender, PaintEventArgs e)
@@ -394,8 +434,8 @@ namespace FloatyImage
         pictureBox1.Top += e.Y - _mouseLocation.Y;
         Refresh();
       }
-    }    
-    
+    }
+
     private void PictureBox1_MouseEnter(object sender, EventArgs e)
     {
       if (pictureBox1.Image == null)
