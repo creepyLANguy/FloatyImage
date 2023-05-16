@@ -176,6 +176,12 @@ namespace FloatyImage
 
     private void DisplayCurrentPixelColour()
     {
+      if (pictureBox1.Image == null)
+      {
+        HideColourIndicators();
+        return;
+      }
+
       var bitmap = new Bitmap(ClientSize.Width, ClientSize.Height);
       DrawToBitmap(bitmap, ClientRectangle);
 
@@ -210,6 +216,12 @@ namespace FloatyImage
       }
       catch (Exception)
       {
+        HideColourIndicators();
+      }
+
+      void HideColourIndicators()
+      {
+
         btn_colour.Visible = false;
         _menuItemColour_divider.Visible = false;
         _menuItemColour_hex.Visible = false;
@@ -428,7 +440,7 @@ namespace FloatyImage
         return;
       }
       
-      if (_isDragging)
+      if (e.Button != MouseButtons.Right && _isDragging)
       {
         pictureBox1.Left += e.X - _mouseLocation.X;
         pictureBox1.Top += e.Y - _mouseLocation.Y;
