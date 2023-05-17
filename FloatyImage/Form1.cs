@@ -29,10 +29,10 @@ namespace FloatyImage
     private static readonly HatchBrush BackgroundBrush = new HatchBrush(BackgroundStyle, BackgroundColor1, BackgroundColor2);
     private readonly SolidBrush _overlayBrush = new SolidBrush(OverlayColor);
     
-    private const int ZoomMin = 1;
-    private const int ZoomMax = 500;
+    private const int ZoomPercentageMin = 1;
+    private const int ZoomPercentageMax = 500;
     private const int ZoomStep = 3;
-    private int _zoomCurrent;
+    private int _zoomPercentageCurrent;
 
     private const int FadeIntervalMilliseconds = 10;
     private const double FadeOpacityStep = 0.1;
@@ -406,20 +406,20 @@ namespace FloatyImage
         return;
       }
 
-      var oldZoom = _zoomCurrent;
+      var oldZoom = _zoomPercentageCurrent;
 
-      _zoomCurrent += e.Delta > 0 ? ZoomStep : -ZoomStep;
+      _zoomPercentageCurrent += e.Delta > 0 ? ZoomStep : -ZoomStep;
       
-      if (_zoomCurrent < ZoomMin)
+      if (_zoomPercentageCurrent < ZoomPercentageMin)
       {
-        _zoomCurrent = ZoomMin;
+        _zoomPercentageCurrent = ZoomPercentageMin;
       }
-      else if (_zoomCurrent > ZoomMax)
+      else if (_zoomPercentageCurrent > ZoomPercentageMax)
       {
-        _zoomCurrent = ZoomMax;
+        _zoomPercentageCurrent = ZoomPercentageMax;
       }
 
-      if (_zoomCurrent == oldZoom)
+      if (_zoomPercentageCurrent == oldZoom)
       {
         return;
       }
@@ -429,8 +429,8 @@ namespace FloatyImage
       var distanceToCursor_x = imageCenter_x - e.X;
       var distanceToCursor_y = imageCenter_y - e.Y;
 
-      var newWidth = pictureBox1.Image.Width * _zoomCurrent / 100;
-      var newHeight = pictureBox1.Image.Height * _zoomCurrent / 100;
+      var newWidth = pictureBox1.Image.Width * _zoomPercentageCurrent / 100;
+      var newHeight = pictureBox1.Image.Height * _zoomPercentageCurrent / 100;
       pictureBox1.Size = new Size(newWidth, newHeight);
 
       var newImageCenter_x = pictureBox1.Location.X + pictureBox1.Width / 2;
@@ -561,12 +561,14 @@ namespace FloatyImage
     }
 
     private void ResetPictureBoxPosition(object sender = null, EventArgs e = null)
-    {
-      _zoomCurrent = 100;
-      pictureBox1.Left = 0;
-      pictureBox1.Top = 0;
-      pictureBox1.Width = pictureBox1.Image.Width;
-      pictureBox1.Height = pictureBox1.Image.Height;
+    {   
+      pictureBox1.Width = ClientSize.Width;
+      pictureBox1.Height = ClientSize.Height;
+
+      pictureBox1.Location = new Point(0, 0);
+
+      StoreCurrentZoomValue();
+
       Refresh();
     }
 
@@ -582,6 +584,7 @@ namespace FloatyImage
       {
         var image = Image.FromFile(path);
         SetImage(image, title);
+        ResetPictureBoxPosition();
       }
       catch (Exception ex)
       {
@@ -617,7 +620,7 @@ namespace FloatyImage
     private void StoreCurrentZoomValue()
     {
       var zoomRatio = (double) pictureBox1.ClientSize.Height / pictureBox1.Image.Height;
-      _zoomCurrent = (int) (zoomRatio * 100);
+      _zoomPercentageCurrent = (int) (zoomRatio * 100);
     }
 
     private static void LaunchNextInstance(List<string> paths)
