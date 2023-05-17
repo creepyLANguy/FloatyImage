@@ -401,6 +401,11 @@ namespace FloatyImage
 
     private void PictureBox1_MouseWheel(object sender, MouseEventArgs e)
     {
+      if (pictureBox1.Image == null)
+      {
+        return;
+      }
+
       var oldZoom = _zoomCurrent;
 
       _zoomCurrent += e.Delta > 0 ? ZoomStep : -ZoomStep;
@@ -414,10 +419,33 @@ namespace FloatyImage
         _zoomCurrent = ZoomMax;
       }
 
-      if (_zoomCurrent != oldZoom)
+      if (_zoomCurrent == oldZoom)
       {
-        ZoomImage(e.X, e.Y);
+        return;
       }
+
+      var imageCenter_x = pictureBox1.Location.X + pictureBox1.Width / 2;
+      var imageCenter_y = pictureBox1.Location.Y + pictureBox1.Height / 2;
+      var distanceToCursor_x = imageCenter_x - e.X;
+      var distanceToCursor_y = imageCenter_y - e.Y;
+
+      var newWidth = pictureBox1.Image.Width * _zoomCurrent / 100;
+      var newHeight = pictureBox1.Image.Height * _zoomCurrent / 100;
+      pictureBox1.Size = new Size(newWidth, newHeight);
+
+      var newImageCenter_x = pictureBox1.Location.X + pictureBox1.Width / 2;
+      var newImageCenter_y = pictureBox1.Location.Y + pictureBox1.Height / 2;
+      var newDistanceToCursor_x = newImageCenter_x - e.X;
+      var newDistanceToCursor_y = newImageCenter_y - e.Y;
+
+      var delta_x = newDistanceToCursor_x - distanceToCursor_x;
+      var delta_y = newDistanceToCursor_y - distanceToCursor_y;
+      if (delta_x != 0 || delta_y != 0)
+      {
+        pictureBox1.Location = new Point(pictureBox1.Location.X - delta_x, pictureBox1.Location.Y - delta_y);
+      }
+
+      Refresh();
     }
 
     private void PictureBox1_MouseDown(object sender, MouseEventArgs e)
@@ -539,37 +567,6 @@ namespace FloatyImage
       pictureBox1.Top = 0;
       pictureBox1.Width = pictureBox1.Image.Width;
       pictureBox1.Height = pictureBox1.Image.Height;
-      Refresh();
-    }
-
-    private void ZoomImage(int x, int y)
-    {
-      if (pictureBox1.Image == null)
-      {
-        return;
-      }
-
-      var imageCenter_x = pictureBox1.Location.X + pictureBox1.Width / 2;
-      var imageCenter_y = pictureBox1.Location.Y + pictureBox1.Height / 2;
-      var distanceToCursor_x = imageCenter_x - x;
-      var distanceToCursor_y = imageCenter_y - y;
-
-      var newWidth = pictureBox1.Image.Width * _zoomCurrent / 100;
-      var newHeight = pictureBox1.Image.Height * _zoomCurrent / 100;
-      pictureBox1.Size = new Size(newWidth, newHeight);
-
-      var newImageCenter_x = pictureBox1.Location.X + pictureBox1.Width / 2;
-      var newImageCenter_y = pictureBox1.Location.Y + pictureBox1.Height / 2;
-      var newDistanceToCursor_x = newImageCenter_x - x;
-      var newDistanceToCursor_y = newImageCenter_y - y;
-
-      var delta_x = newDistanceToCursor_x - distanceToCursor_x;
-      var delta_y = newDistanceToCursor_y - distanceToCursor_y;
-      if (delta_x != 0 || delta_y != 0)
-      {
-        pictureBox1.Location = new Point(pictureBox1.Location.X - delta_x, pictureBox1.Location.Y - delta_y);
-      } 
-
       Refresh();
     }
 
