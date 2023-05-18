@@ -32,7 +32,7 @@ namespace FloatyImage
     private const int ZoomPercentageMin = 1;
     private const int ZoomPercentageMax = 500;
     private const int ZoomStep = 3;
-    private int _zoomPercentageCurrent;
+    private float _zoomPercentageCurrent;
 
     private const int FadeIntervalMilliseconds = 10;
     private const double FadeOpacityStep = 0.1;
@@ -51,6 +51,11 @@ namespace FloatyImage
     private int cachedPictureBoxPos_x = 0;
     private int cachedPictureBoxPos_y = 0;
 
+    private readonly System.Windows.Forms.Timer debounceTimer = new System.Windows.Forms.Timer();
+    private readonly int debounceTimerInterval = 1;
+
+    private MouseEventArgs cachedMouseEventArgs;
+
     private readonly OpenFileDialog _openFileDialog = new OpenFileDialog();
 
     private readonly ContextMenu _contextMenu = new ContextMenu();
@@ -67,6 +72,9 @@ namespace FloatyImage
     public Form1(string [] args)
     {
       InitializeComponent();
+
+      debounceTimer.Interval = debounceTimerInterval; // Adjust the debounce interval as needed
+      debounceTimer.Tick += DebounceTimer_Tick;
 
       SetupEventHandlers();
 
@@ -401,51 +409,9 @@ namespace FloatyImage
 
     private void PictureBox1_MouseWheel(object sender, MouseEventArgs e)
     {
-      if (pictureBox1.Image == null)
-      {
-        return;
-      }
-
-      var oldZoom = _zoomPercentageCurrent;
-
-      _zoomPercentageCurrent += e.Delta > 0 ? ZoomStep : -ZoomStep;
-      
-      if (_zoomPercentageCurrent < ZoomPercentageMin)
-      {
-        _zoomPercentageCurrent = ZoomPercentageMin;
-      }
-      else if (_zoomPercentageCurrent > ZoomPercentageMax)
-      {
-        _zoomPercentageCurrent = ZoomPercentageMax;
-      }
-
-      if (_zoomPercentageCurrent == oldZoom)
-      {
-        return;
-      }
-
-      var imageCenter_x = pictureBox1.Location.X + pictureBox1.Width / 2;
-      var imageCenter_y = pictureBox1.Location.Y + pictureBox1.Height / 2;
-      var distanceToCursor_x = imageCenter_x - e.X;
-      var distanceToCursor_y = imageCenter_y - e.Y;
-
-      var newWidth = pictureBox1.Image.Width * _zoomPercentageCurrent / 100;
-      var newHeight = pictureBox1.Image.Height * _zoomPercentageCurrent / 100;
-      pictureBox1.Size = new Size(newWidth, newHeight);
-
-      var newImageCenter_x = pictureBox1.Location.X + pictureBox1.Width / 2;
-      var newImageCenter_y = pictureBox1.Location.Y + pictureBox1.Height / 2;
-      var newDistanceToCursor_x = newImageCenter_x - e.X;
-      var newDistanceToCursor_y = newImageCenter_y - e.Y;
-
-      var delta_x = newDistanceToCursor_x - distanceToCursor_x;
-      var delta_y = newDistanceToCursor_y - distanceToCursor_y;
-      if (delta_x != 0 || delta_y != 0)
-      {
-        pictureBox1.Location = new Point(pictureBox1.Location.X - delta_x, pictureBox1.Location.Y - delta_y);
-      }
-
-      Refresh();
+      cachedMouseEventArgs = e;
+      debounceTimer.Stop();
+      debounceTimer.Start();      
     }
 
     private void PictureBox1_MouseDown(object sender, MouseEventArgs e)
@@ -683,6 +649,64 @@ namespace FloatyImage
     private static void LogException(Exception ex)
     {
       Console.WriteLine(ex.ToString());
+    }
+
+    private void DebounceTimer_Tick(object sender, EventArgs e)
+    {
+      Zoom();
+      
+      debounceTimer.Stop();
+    }
+
+    private void Zoom()
+    {
+      if (pictureBox1.Image == null)
+      {
+        return;
+      }
+
+      var e = cachedMouseEventArgs;
+
+      var oldZoom = _zoomPercentageCurrent;
+
+      _zoomPercentageCurrent += e.Delta > 0 ? ZoomStep : -ZoomStep;
+
+      if (_zoomPercentageCurrent < ZoomPercentageMin)
+      {
+        _zoomPercentageCurrent = ZoomPercentageMin;
+      }
+      else if (_zoomPercentageCurrent > ZoomPercentageMax)
+      {
+        _zoomPercentageCurrent = ZoomPercentageMax;
+      }
+
+      if (_zoomPercentageCurrent == oldZoom)
+      {
+        return;
+      }
+
+      var imageCenter_x = pictureBox1.Location.X + pictureBox1.Width / 2;
+      var imageCenter_y = pictureBox1.Location.Y + pictureBox1.Height / 2;
+      var distanceToCursor_x = imageCenter_x - e.X;
+      var distanceToCursor_y = imageCenter_y - e.Y;
+
+      var newWidth = pictureBox1.Image.Width * _zoomPercentageCurrent / 100;
+      var newHeight = pictureBox1.Image.Height * _zoomPercentageCurrent / 100;
+      pictureBox1.Size = new Size((int)newWidth, (int)newHeight);
+
+      var newImageCenter_x = pictureBox1.Location.X + pictureBox1.Width / 2;
+      var newImageCenter_y = pictureBox1.Location.Y + pictureBox1.Height / 2;
+      var newDistanceToCursor_x = newImageCenter_x - e.X;
+      var newDistanceToCursor_y = newImageCenter_y - e.Y;
+
+      var delta_x = newDistanceToCursor_x - distanceToCursor_x;
+      var delta_y = newDistanceToCursor_y - distanceToCursor_y;
+      if (delta_x != 0 || delta_y != 0)
+      {
+        pictureBox1.Location = new Point(pictureBox1.Location.X - delta_x, pictureBox1.Location.Y - delta_y);
+      }
+
+      Refresh();
     }
   }
 }
