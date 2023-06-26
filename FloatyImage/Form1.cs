@@ -19,6 +19,9 @@ namespace FloatyImage
     private const string LockString = "Lock";
     private const string UnlockString = "Unlock";
 
+    private const string PersistString = "Persist";
+    private const string StopPersistingString = "Unpersist";
+
     private readonly Icon DefaultIcon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
 
     private static readonly Color BackgroundColor1 = Color.White;
@@ -65,6 +68,7 @@ namespace FloatyImage
     private readonly MenuItem _menuItemPaste = new MenuItem("Paste");
     private readonly MenuItem _menuItemRecenter = new MenuItem("Recenter");
     private readonly MenuItem _menuItemOneToOne = new MenuItem("Actual Size");
+    private readonly MenuItem _menuItemAlwaysOnTop = new MenuItem(StopPersistingString);
     private readonly MenuItem _menuItemToggleLock = new MenuItem(LockString);
     private readonly MenuItem _menuItemColourDivider = new MenuItem("-");
     private readonly MenuItem _menuItemColourHex = new MenuItem();
@@ -101,15 +105,21 @@ namespace FloatyImage
       _borderWidth = (screenRectangle.Left - Left);
 
       DoubleBuffered = true;
-      TopLevel = true;
-      TopMost = true;
       AllowDrop = true;
+
+      SetAlwaysOnTop(true);
 
       pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
       pictureBox1.BackColor = Color.Transparent;
 
       btn_colour.Enabled = false;
       btn_colour.Visible = false;
+    }
+
+    private void SetAlwaysOnTop(bool mustBeOnTop)
+    {
+      TopLevel = mustBeOnTop;
+      TopMost = mustBeOnTop;
     }
 
     private void SetupEventHandlers()
@@ -149,6 +159,7 @@ namespace FloatyImage
       _menuItemPaste.Click += Paste;
       _menuItemRecenter.Click += ResetPictureBoxPosition;
       _menuItemOneToOne.Click += ZoomOneToOne;
+      _menuItemAlwaysOnTop.Click += ToggleAlwaysOnTop;
       _menuItemToggleLock.Click += ToggleTitlebar;
       _menuItemColourHex.Click += CopyTextToClipboard;
       _menuItemColourRgb.Click += CopyTextToClipboard;
@@ -160,9 +171,10 @@ namespace FloatyImage
       _contextMenu.MenuItems.Add(_menuItemPaste);
       _contextMenu.MenuItems.Add(new MenuItem("-"));
       _contextMenu.MenuItems.Add(_menuItemRecenter);
-      _contextMenu.MenuItems.Add(_menuItemOneToOne); 
+      _contextMenu.MenuItems.Add(_menuItemOneToOne);
       _contextMenu.MenuItems.Add(new MenuItem("-"));
       _contextMenu.MenuItems.Add(_menuItemToggleLock);
+      _contextMenu.MenuItems.Add(_menuItemAlwaysOnTop);
       _contextMenu.MenuItems.Add(_menuItemColourDivider);
       _contextMenu.MenuItems.Add(_menuItemColourHex);
       _contextMenu.MenuItems.Add(_menuItemColourRgb);
@@ -386,7 +398,7 @@ namespace FloatyImage
           ResetPictureBoxPosition(sender, e);
           break;
         default:
-          throw new ArgumentOutOfRangeException();
+          return;
       }
     }
 
@@ -567,6 +579,14 @@ namespace FloatyImage
 
       Refresh();
     }
+
+    private void ToggleAlwaysOnTop(object sender = null, EventArgs e = null)
+    {
+      var isAlwaysOnTop = TopLevel && TopMost;
+      TopMost = !isAlwaysOnTop;
+      _menuItemAlwaysOnTop.Text = !isAlwaysOnTop ? StopPersistingString : PersistString;
+    }
+
 
     private void LoadNextFile(List<string> paths)
     {
