@@ -13,6 +13,8 @@ namespace FloatyImage
 {
   public sealed partial class Form1 : Form
   {
+    private static string ApplicationName = Application.ProductName;
+
     private const string DefaultTitle = "(Right click on canvas or drag on images/folders to begin)";
     private const string PastedImageTitle = "[Pasted Image]";
 
@@ -22,7 +24,13 @@ namespace FloatyImage
     private const string PersistString = "Persist";
     private const string StopPersistingString = "Unpersist";
 
-    private readonly Icon DefaultIcon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+    private const string FailedToLoadImageMessageString = "Failed to load image:";
+    private static string FailedToLoadImageCaptionString = ApplicationName + " Error";
+    private const string PossibleErrorMessageString = "Possible error encountered while loading:";
+    private static string PossibleErrorCaptionString = ApplicationName + " Warning";
+
+    private static readonly Icon DefaultIcon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+    private static readonly int MaxIconDim = Math.Max(DefaultIcon.Width, DefaultIcon.Height);
 
     private static readonly Color BackgroundColor1 = Color.White;
     private static readonly Color BackgroundColor2 = Color.LightGray;
@@ -548,6 +556,8 @@ namespace FloatyImage
 
         var image = Clipboard.GetImage();
         SetImage(image, PastedImageTitle);
+        SetIcon(image);
+
         ResetPictureBoxPosition();
       }
       catch (Exception ex)
@@ -600,6 +610,8 @@ namespace FloatyImage
       {
         var image = Image.FromFile(path);
         SetImage(image, title);
+        SetIcon(image);
+
         ResetPictureBoxPosition();
       }
       catch (Exception ex)
@@ -616,8 +628,27 @@ namespace FloatyImage
 
       if (failedToLoad)
       {
-        Close();
-        return;
+        if (pictureBox1.Image == null)
+        {
+          MessageBox.Show(
+            FailedToLoadImageMessageString + Environment.NewLine + title,
+            FailedToLoadImageCaptionString,
+            MessageBoxButtons.OK, 
+            MessageBoxIcon.Error, 
+            MessageBoxDefaultButton.Button1, 
+            MessageBoxOptions.ServiceNotification);
+
+          Close();
+          return;
+        }
+
+        MessageBox.Show(
+          PossibleErrorMessageString + Environment.NewLine + title,
+          PossibleErrorCaptionString,
+          MessageBoxButtons.OK, 
+          MessageBoxIcon.Warning, 
+          MessageBoxDefaultButton.Button1, 
+          MessageBoxOptions.ServiceNotification);
       }
 
       StoreCurrentZoomValue();
@@ -626,11 +657,25 @@ namespace FloatyImage
     private void SetImage(Image image, string title)
     {
       Text = title;
-
       pictureBox1.Image = image;
+    }
 
-      var bmp = (Bitmap)image;
-      Icon = Icon.FromHandle(bmp.GetHicon());
+    private void SetIcon(Image image)
+    {
+      var newWidth = MaxIconDim;
+      var newHeight = MaxIconDim;
+
+      if (image.Width > image.Height)
+      {
+        newHeight = (int)((float)image.Height / image.Width * MaxIconDim);
+      }
+      else
+      {
+        newWidth = (int)((float)image.Width / image.Height * MaxIconDim);
+      }
+
+      var bitmap = new Bitmap(image, newWidth, newHeight);
+      Icon = Icon.FromHandle(bitmap.GetHicon());
     }
 
     private void StoreCurrentZoomValue()
