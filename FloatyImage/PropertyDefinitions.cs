@@ -23,9 +23,9 @@ namespace FloatyImage
     private static readonly Icon DefaultIcon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
     private static readonly int MaxIconDim = Math.Max(DefaultIcon.Width, DefaultIcon.Height);
 
-    private static readonly Color BackgroundColor1 = Color.White;
-    private static readonly Color BackgroundColor2 = Color.LightGray;
-    private const HatchStyle BackgroundStyle = HatchStyle.LargeGrid;
+    private static readonly Color BgColor1 = Color.White;
+    private static readonly Color BgColor2 = Color.LightGray;
+    private const HatchStyle BgStyle = HatchStyle.LargeGrid;
     private static readonly Color OverlayColor = Color.FromArgb(128, Color.MediumTurquoise);
   }
 }
