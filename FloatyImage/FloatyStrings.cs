@@ -12,8 +12,8 @@ namespace FloatyImage
     public const string LockString = "Lock";
     public const string UnlockString = "Unlock";
 
-    public const string PersistString = "Persist";
-    public const string StopPersistingString = "Unpersist";
+    public const string PersistString = "Float";
+    public const string StopPersistingString = "Unfloat";
 
     public static readonly string FailedToLoadImageCaptionString = ApplicationName + " Error";
     public const string FailedToLoadImageMessageString = "Failed to load image:";
