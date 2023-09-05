@@ -207,7 +207,7 @@ namespace FloatyImage
         btn_colour.Location = new Point(cursorPos.X - btn_colour.Width, cursorPos.Y - btn_colour.Height);
         btn_colour.Visible = true;
 
-        var hex = $"{colour.R:X2}{colour.G:X2}{colour.B:X2}";
+        var hex = $"#{colour.R:X2}{colour.G:X2}{colour.B:X2}";
         var rgb = $"{colour.R},{colour.G},{colour.B}";
 
         _menuItemColourHex.Text = hex;
@@ -757,7 +757,7 @@ namespace FloatyImage
         _zoomPercentageCurrent = ZoomPercentageMax;
       }
 
-      if (Math.Abs(_zoomPercentageCurrent - oldZoom) < ZoomComparitorMargin)
+      if (Math.Abs(_zoomPercentageCurrent - oldZoom) < ZoomComparisonMargin)
       {
         return;
       }

@@ -10,7 +10,7 @@ namespace FloatyImage
     private const int ZoomPercentageMin = 1;
     private const int ZoomPercentageMax = 500;
     private const int ZoomStep = 3;
-    private const float ZoomComparitorMargin = 0.0f;
+    private const float ZoomComparisonMargin = 0.0f;
 
 
     private const int FadeIntervalMilliseconds = 10;
