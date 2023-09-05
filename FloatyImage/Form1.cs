@@ -8,33 +8,20 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using static System.Reflection.Assembly;
+using static FloatyImage.FloatyStrings;
 
 namespace FloatyImage
 {
   public sealed partial class Form1 : Form
   {
-    private static readonly Icon DefaultIcon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
-    private static readonly int MaxIconDim = Math.Max(DefaultIcon.Width, DefaultIcon.Height);
-
-    private static readonly Color BackgroundColor1 = Color.White;
-    private static readonly Color BackgroundColor2 = Color.LightGray;
-    private const HatchStyle BackgroundStyle = HatchStyle.LargeGrid;
-    private static readonly Color OverlayColor = Color.FromArgb(128, Color.MediumTurquoise);
-
-    private static readonly HatchBrush BackgroundBrush =
+    private readonly HatchBrush _backgroundBrush =
       new HatchBrush(BackgroundStyle, BackgroundColor1, BackgroundColor2);
 
     private readonly SolidBrush _overlayBrush = new SolidBrush(OverlayColor);
 
-    private const int ZoomPercentageMin = 1;
-    private const int ZoomPercentageMax = 500;
-    private const int ZoomStep = 3;
-    private float _zoomPercentageCurrent;
+    private readonly System.Windows.Forms.Timer _debounceTimer = new System.Windows.Forms.Timer();
 
-    private const int FadeIntervalMilliseconds = 10;
-    private const double FadeOpacityStep = 0.1;
-    private const double FadeFloor = 0.2;
-    private const double FadeCeiling = 0.3;
+    private float _zoomPercentageCurrent;
 
     private Point _mouseLocation;
 
@@ -45,11 +32,8 @@ namespace FloatyImage
     private int _titlebarHeight;
     private bool _isTitlebarHidden;
 
-    private int _cachedPictureBoxPosX = 0;
-    private int _cachedPictureBoxPosY = 0;
-
-    private readonly System.Windows.Forms.Timer _debounceTimer = new System.Windows.Forms.Timer();
-    private const int DebounceTimerInterval = 1;
+    private int _cachedPictureBoxPosX;
+    private int _cachedPictureBoxPosY;
 
     private MouseEventArgs _cachedMouseEventArgs;
 
@@ -223,8 +207,8 @@ namespace FloatyImage
         btn_colour.Location = new Point(cursorPos.X - btn_colour.Width, cursorPos.Y - btn_colour.Height);
         btn_colour.Visible = true;
 
-        string hex = string.Format("{0:X2}{1:X2}{2:X2}", colour.R, colour.G, colour.B);
-        var rgb = string.Format("{0},{1},{2}", colour.R, colour.G, colour.B);
+        var hex = $"{colour.R:X2}{colour.G:X2}{colour.B:X2}";
+        var rgb = $"{colour.R},{colour.G},{colour.B}";
 
         _menuItemColourHex.Text = hex;
         _menuItemColourRgb.Text = rgb;
@@ -254,7 +238,7 @@ namespace FloatyImage
         return;
       }
 
-      e.Graphics.FillRectangle(BackgroundBrush, ClientRectangle);
+      e.Graphics.FillRectangle(_backgroundBrush, ClientRectangle);
     }
 
     private void PaintOverlay(object sender, PaintEventArgs e)
@@ -402,7 +386,7 @@ namespace FloatyImage
     private void Form1_Resize(object sender, EventArgs e)
     {
       //We are prolly toggling lock state
-      if (Opacity != 1)
+      if ((int)Opacity != 1)
       {
         return;
       }
@@ -421,7 +405,7 @@ namespace FloatyImage
     private void Form1_ResizeBegin(object sender, EventArgs e)
     {
       //We are prolly toggling lock state
-      if (Opacity != 1)
+      if ((int)Opacity != 1)
       {
         return;
       }
@@ -760,11 +744,9 @@ namespace FloatyImage
         return;
       }
 
-      var e = _cachedMouseEventArgs;
-
       var oldZoom = _zoomPercentageCurrent;
 
-      _zoomPercentageCurrent += e.Delta > 0 ? ZoomStep : -ZoomStep;
+      _zoomPercentageCurrent += _cachedMouseEventArgs.Delta > 0 ? ZoomStep : -ZoomStep;
 
       if (_zoomPercentageCurrent < ZoomPercentageMin)
       {
@@ -775,33 +757,40 @@ namespace FloatyImage
         _zoomPercentageCurrent = ZoomPercentageMax;
       }
 
-      if (_zoomPercentageCurrent == oldZoom)
+      if (Math.Abs(_zoomPercentageCurrent - oldZoom) < ZoomComparitorMargin)
       {
         return;
       }
 
-      var imageCenter_x = pictureBox1.Location.X + pictureBox1.Width / 2;
-      var imageCenter_y = pictureBox1.Location.Y + pictureBox1.Height / 2;
-      var distanceToCursor_x = imageCenter_x - e.X;
-      var distanceToCursor_y = imageCenter_y - e.Y;
-
-      var newWidth = pictureBox1.Image.Width * _zoomPercentageCurrent / 100;
-      var newHeight = pictureBox1.Image.Height * _zoomPercentageCurrent / 100;
-      pictureBox1.Size = new Size((int) newWidth, (int) newHeight);
-
-      var newImageCenter_x = pictureBox1.Location.X + pictureBox1.Width / 2;
-      var newImageCenter_y = pictureBox1.Location.Y + pictureBox1.Height / 2;
-      var newDistanceToCursor_x = newImageCenter_x - e.X;
-      var newDistanceToCursor_y = newImageCenter_y - e.Y;
-
-      var delta_x = newDistanceToCursor_x - distanceToCursor_x;
-      var delta_y = newDistanceToCursor_y - distanceToCursor_y;
-      if (delta_x != 0 || delta_y != 0)
+      var (deltaX, deltaY) = GetDeltasForZoom();
+      if (deltaX != 0 || deltaY != 0)
       {
-        pictureBox1.Location = new Point(pictureBox1.Location.X - delta_x, pictureBox1.Location.Y - delta_y);
+        pictureBox1.Location = new Point(pictureBox1.Location.X - deltaX, pictureBox1.Location.Y - deltaY);
       }
 
       Refresh();
+    }
+
+    private Tuple<int, int> GetDeltasForZoom()
+    {
+      var imageCenterX = pictureBox1.Location.X + pictureBox1.Width / 2;
+      var imageCenterY = pictureBox1.Location.Y + pictureBox1.Height / 2;
+      var distanceToCursorX = imageCenterX - _cachedMouseEventArgs.X;
+      var distanceToCursorY = imageCenterY - _cachedMouseEventArgs.Y;
+
+      var newWidth = pictureBox1.Image.Width * _zoomPercentageCurrent / 100;
+      var newHeight = pictureBox1.Image.Height * _zoomPercentageCurrent / 100;
+      pictureBox1.Size = new Size((int)newWidth, (int)newHeight);
+
+      var newImageCenterX = pictureBox1.Location.X + pictureBox1.Width / 2;
+      var newImageCenterY = pictureBox1.Location.Y + pictureBox1.Height / 2;
+      var newDistanceToCursorX = newImageCenterX - _cachedMouseEventArgs.X;
+      var newDistanceToCursorY = newImageCenterY - _cachedMouseEventArgs.Y;
+
+      var deltaX = newDistanceToCursorX - distanceToCursorX;
+      var deltaY = newDistanceToCursorY - distanceToCursorY;
+
+      return new Tuple<int, int>(deltaX, deltaY);
     }
   }
 }
