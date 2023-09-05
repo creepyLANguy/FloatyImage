@@ -13,22 +13,6 @@ namespace FloatyImage
 {
   public sealed partial class Form1 : Form
   {
-    private static string ApplicationName = Application.ProductName;
-
-    private const string DefaultTitle = "(Right click on canvas or drag on images/folders to begin)";
-    private const string PastedImageTitle = "[Pasted Image]";
-
-    private const string LockString = "Lock";
-    private const string UnlockString = "Unlock";
-
-    private const string PersistString = "Persist";
-    private const string StopPersistingString = "Unpersist";
-
-    private const string FailedToLoadImageMessageString = "Failed to load image:";
-    private static string FailedToLoadImageCaptionString = ApplicationName + " Error";
-    private const string PossibleErrorMessageString = "Possible error encountered while loading:";
-    private static string PossibleErrorCaptionString = ApplicationName + " Warning";
-
     private static readonly Icon DefaultIcon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
     private static readonly int MaxIconDim = Math.Max(DefaultIcon.Width, DefaultIcon.Height);
 
@@ -36,10 +20,12 @@ namespace FloatyImage
     private static readonly Color BackgroundColor2 = Color.LightGray;
     private const HatchStyle BackgroundStyle = HatchStyle.LargeGrid;
     private static readonly Color OverlayColor = Color.FromArgb(128, Color.MediumTurquoise);
-    
-    private static readonly HatchBrush BackgroundBrush = new HatchBrush(BackgroundStyle, BackgroundColor1, BackgroundColor2);
+
+    private static readonly HatchBrush BackgroundBrush =
+      new HatchBrush(BackgroundStyle, BackgroundColor1, BackgroundColor2);
+
     private readonly SolidBrush _overlayBrush = new SolidBrush(OverlayColor);
-    
+
     private const int ZoomPercentageMin = 1;
     private const int ZoomPercentageMax = 500;
     private const int ZoomStep = 3;
@@ -81,8 +67,8 @@ namespace FloatyImage
     private readonly MenuItem _menuItemColourDivider = new MenuItem("-");
     private readonly MenuItem _menuItemColourHex = new MenuItem();
     private readonly MenuItem _menuItemColourRgb = new MenuItem();
-    
-    public Form1(string [] args)
+
+    public Form1(string[] args)
     {
       InitializeComponent();
 
@@ -101,7 +87,7 @@ namespace FloatyImage
       {
         return;
       }
-      
+
       var files = GetAllFiles(args);
       LoadNextFile(files);
     }
@@ -134,7 +120,7 @@ namespace FloatyImage
     {
       Load += Form1_Load;
       Paint += PaintOverlay;
-      Paint += PaintBackground;      
+      Paint += PaintBackground;
 
       pictureBox1.Paint += PaintOverlay;
 
@@ -187,7 +173,7 @@ namespace FloatyImage
       _contextMenu.MenuItems.Add(_menuItemColourHex);
       _contextMenu.MenuItems.Add(_menuItemColourRgb);
 
-      ContextMenu = _contextMenu;     
+      ContextMenu = _contextMenu;
     }
 
     private void ContextMenu_Opening(object sender, EventArgs e)
@@ -224,8 +210,8 @@ namespace FloatyImage
       var screenWindowPos = PointToScreen(windowRect.Location);
 
       var clientCursorPos = new Point(
-          screenCursorPos.X - screenWindowPos.X,
-          screenCursorPos.Y - screenWindowPos.Y
+        screenCursorPos.X - screenWindowPos.X,
+        screenCursorPos.Y - screenWindowPos.Y
       );
 
       try
@@ -239,7 +225,7 @@ namespace FloatyImage
 
         string hex = string.Format("{0:X2}{1:X2}{2:X2}", colour.R, colour.G, colour.B);
         var rgb = string.Format("{0},{1},{2}", colour.R, colour.G, colour.B);
-        
+
         _menuItemColourHex.Text = hex;
         _menuItemColourRgb.Text = rgb;
 
@@ -254,7 +240,6 @@ namespace FloatyImage
 
       void HideColourIndicators()
       {
-
         btn_colour.Visible = false;
         _menuItemColourDivider.Visible = false;
         _menuItemColourHex.Visible = false;
@@ -274,7 +259,7 @@ namespace FloatyImage
 
     private void PaintOverlay(object sender, PaintEventArgs e)
     {
-      if (_isHovering  == false)
+      if (_isHovering == false)
       {
         return;
       }
@@ -308,6 +293,7 @@ namespace FloatyImage
       {
         pictureBox1.Left = _cachedPictureBoxPosX;
       }
+
       if (pictureBox1.Top != _cachedPictureBoxPosY)
       {
         pictureBox1.Top = _cachedPictureBoxPosY;
@@ -323,7 +309,8 @@ namespace FloatyImage
         Thread.Sleep(FadeIntervalMilliseconds);
         Opacity -= FadeOpacityStep;
       }
-      Opacity = 0;     
+
+      Opacity = 0;
     }
 
     private void FadeIn()
@@ -333,12 +320,13 @@ namespace FloatyImage
         Thread.Sleep(FadeIntervalMilliseconds);
         Opacity += FadeOpacityStep;
       }
+
       Opacity = 1;
     }
 
     private void CopyTextToClipboard(object sender, EventArgs e)
     {
-      Clipboard.SetText(((MenuItem)sender).Text);
+      Clipboard.SetText(((MenuItem) sender).Text);
     }
 
     private void Form1_DragEnter(object sender, DragEventArgs e)
@@ -365,7 +353,7 @@ namespace FloatyImage
       _isHovering = false;
       Invalidate();
 
-      var dropped = (string[])e.Data.GetData(DataFormats.FileDrop);
+      var dropped = (string[]) e.Data.GetData(DataFormats.FileDrop);
       var files = GetAllFiles(dropped);
       LoadNextFile(files);
     }
@@ -388,9 +376,10 @@ namespace FloatyImage
       switch (e.KeyCode)
       {
         case Keys.V:
-          Paste(sender, e); Copy(sender, e);
+          Paste(sender, e);
+          Copy(sender, e);
           break;
-        case Keys.C: 
+        case Keys.C:
           Copy(sender, e);
           break;
         case Keys.X:
@@ -422,12 +411,13 @@ namespace FloatyImage
       {
         pictureBox1.Left = _cachedPictureBoxPosX;
       }
+
       if (pictureBox1.Top != _cachedPictureBoxPosY)
       {
         pictureBox1.Top = _cachedPictureBoxPosY;
       }
     }
-    
+
     private void Form1_ResizeBegin(object sender, EventArgs e)
     {
       //We are prolly toggling lock state
@@ -437,14 +427,14 @@ namespace FloatyImage
       }
 
       _cachedPictureBoxPosX = pictureBox1.Left;
-      _cachedPictureBoxPosY = pictureBox1.Top;     
+      _cachedPictureBoxPosY = pictureBox1.Top;
     }
 
     private void PictureBox1_MouseWheel(object sender, MouseEventArgs e)
     {
       _cachedMouseEventArgs = e;
       _debounceTimer.Stop();
-      _debounceTimer.Start();      
+      _debounceTimer.Start();
     }
 
     private void PictureBox1_MouseDown(object sender, MouseEventArgs e)
@@ -466,7 +456,7 @@ namespace FloatyImage
       {
         return;
       }
-      
+
       if (e.Button != MouseButtons.Right && _isDragging)
       {
         pictureBox1.Left += e.X - _mouseLocation.X;
@@ -527,7 +517,7 @@ namespace FloatyImage
       pictureBox1.Image = null;
       Icon = DefaultIcon;
     }
-    
+
     private void Copy(object sender, EventArgs e)
     {
       if (pictureBox1.Image == null)
@@ -567,7 +557,7 @@ namespace FloatyImage
     }
 
     private void ResetPictureBoxPosition(object sender = null, EventArgs e = null)
-    {   
+    {
       pictureBox1.Width = ClientSize.Width;
       pictureBox1.Height = ClientSize.Height;
 
@@ -577,13 +567,13 @@ namespace FloatyImage
 
       Refresh();
     }
-        
+
     private void ZoomOneToOne(object sender = null, EventArgs e = null)
-    {   
+    {
       pictureBox1.Width = pictureBox1.Image.Width;
       pictureBox1.Height = pictureBox1.Image.Height;
 
-      pictureBox1.Location = new Point(-pictureBox1.Image.Width/2, -pictureBox1.Image.Height/2);
+      pictureBox1.Location = new Point(-pictureBox1.Image.Width / 2, -pictureBox1.Image.Height / 2);
 
       StoreCurrentZoomValue();
 
@@ -633,9 +623,9 @@ namespace FloatyImage
           MessageBox.Show(
             FailedToLoadImageMessageString + Environment.NewLine + title,
             FailedToLoadImageCaptionString,
-            MessageBoxButtons.OK, 
-            MessageBoxIcon.Error, 
-            MessageBoxDefaultButton.Button1, 
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error,
+            MessageBoxDefaultButton.Button1,
             MessageBoxOptions.ServiceNotification);
 
           Close();
@@ -645,9 +635,9 @@ namespace FloatyImage
         MessageBox.Show(
           PossibleErrorMessageString + Environment.NewLine + title,
           PossibleErrorCaptionString,
-          MessageBoxButtons.OK, 
-          MessageBoxIcon.Warning, 
-          MessageBoxDefaultButton.Button1, 
+          MessageBoxButtons.OK,
+          MessageBoxIcon.Warning,
+          MessageBoxDefaultButton.Button1,
           MessageBoxOptions.ServiceNotification);
       }
 
@@ -667,11 +657,11 @@ namespace FloatyImage
 
       if (image.Width > image.Height)
       {
-        newHeight = (int)((float)image.Height / image.Width * MaxIconDim);
+        newHeight = (int) ((float) image.Height / image.Width * MaxIconDim);
       }
       else
       {
-        newWidth = (int)((float)image.Width / image.Height * MaxIconDim);
+        newWidth = (int) ((float) image.Width / image.Height * MaxIconDim);
       }
 
       var bitmap = new Bitmap(image, newWidth, newHeight);
@@ -691,6 +681,7 @@ namespace FloatyImage
       {
         args += "\"" + path + "\"" + " ";
       }
+
       args = args.TrimEnd(' ');
 
       var location = GetEntryAssembly()?.Location;
@@ -749,7 +740,7 @@ namespace FloatyImage
     private void DebounceTimer_Tick(object sender, EventArgs e)
     {
       Zoom();
-      
+
       _debounceTimer.Stop();
     }
 
@@ -787,7 +778,7 @@ namespace FloatyImage
 
       var newWidth = pictureBox1.Image.Width * _zoomPercentageCurrent / 100;
       var newHeight = pictureBox1.Image.Height * _zoomPercentageCurrent / 100;
-      pictureBox1.Size = new Size((int)newWidth, (int)newHeight);
+      pictureBox1.Size = new Size((int) newWidth, (int) newHeight);
 
       var newImageCenter_x = pictureBox1.Location.X + pictureBox1.Width / 2;
       var newImageCenter_y = pictureBox1.Location.Y + pictureBox1.Height / 2;
