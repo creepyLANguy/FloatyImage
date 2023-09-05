@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace FloatyImage
 {
-  public sealed partial class Form1
+  public partial class Form1
   {
     private readonly ContextMenu _contextMenu = new ContextMenu();
     private readonly MenuItem _menuItemOpen = new MenuItem("Open");
