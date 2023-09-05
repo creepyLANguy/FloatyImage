@@ -617,28 +617,32 @@ namespace FloatyImage
       }
 
       if (failedToLoad)
-      {
-        if (pictureBox1.Image == null)
-        {
-          MessageBox.Show(
-            FailedToLoadImageMessageString + Environment.NewLine + title,
+      { 
+        var message =
+          FailedToLoadImageMessageString +
+          Environment.NewLine +
+          title;
+
+        var selection =
+          MessageBox.Show(message,
             FailedToLoadImageCaptionString,
-            MessageBoxButtons.OK,
+            MessageBoxButtons.AbortRetryIgnore,
             MessageBoxIcon.Error,
             MessageBoxDefaultButton.Button1,
             MessageBoxOptions.ServiceNotification);
 
+        if (selection == DialogResult.Retry)
+        {
+          LaunchNextInstance(path);
           Close();
-          return;
         }
 
-        MessageBox.Show(
-          PossibleErrorMessageString + Environment.NewLine + title,
-          PossibleErrorCaptionString,
-          MessageBoxButtons.OK,
-          MessageBoxIcon.Warning,
-          MessageBoxDefaultButton.Button1,
-          MessageBoxOptions.ServiceNotification);
+        if (selection == DialogResult.Abort)
+        {
+          Close();
+        }
+
+        return;
       }
 
       StoreCurrentZoomValue();
@@ -672,6 +676,11 @@ namespace FloatyImage
     {
       var zoomRatio = (double) pictureBox1.ClientSize.Height / pictureBox1.Image.Height;
       _zoomPercentageCurrent = (int) (zoomRatio * 100);
+    }
+
+    private static void LaunchNextInstance(string path)
+    {
+      LaunchNextInstance(new List<string>() {path});
     }
 
     private static void LaunchNextInstance(List<string> paths)

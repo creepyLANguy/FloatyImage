@@ -15,13 +15,9 @@ namespace FloatyImage
     private const string PersistString = "Persist";
     private const string StopPersistingString = "Unpersist";
 
-    private const string FailedToLoadImageMessageString = "Failed to load image:";
     private static readonly string FailedToLoadImageCaptionString = ApplicationName + " Error";
-
-    private const string PossibleErrorMessageString = "Possible error encountered while loading:";
-    private static readonly string PossibleErrorCaptionString = ApplicationName + " Warning";
+    private const string FailedToLoadImageMessageString = "Failed to load image:";
   }
-
 }
 
 
