@@ -9,11 +9,14 @@ namespace FloatyImage
     public const string DefaultTitle = "(Right click on canvas or drag on images/folders to begin)";
     public const string PastedImageTitle = "[Pasted Image]";
 
+    public const string PinString = "Pin";
+    public const string UnpinString = "Unpin";
+
     public const string LockString = "Lock";
     public const string UnlockString = "Unlock";
 
-    public const string PersistString = "Float";
-    public const string StopPersistingString = "Unfloat";
+    public const string FloatString = "Float";
+    public const string UnfloatString = "Unfloat";
 
     public static readonly string FailedToLoadImageCaptionString = ApplicationName + " Error";
     public const string FailedToLoadImageMessageString = "Failed to load image:";

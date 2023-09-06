@@ -12,6 +12,8 @@ namespace FloatyImage
 {
   public sealed partial class Form1 : Form
   {
+    private Cursor SpecialCursor = SpecialCursorDefault;
+
     private readonly HatchBrush _backgroundBrush 
       = new HatchBrush(BgStyle, BgColor1, BgColor2);
 
@@ -34,6 +36,7 @@ namespace FloatyImage
     private int _borderWidth;
     private int _titlebarHeight;
     private bool _isTitlebarHidden;
+    private bool _isImagePositionLocked;
 
     private int _cachedPictureBoxPosX;
     private int _cachedPictureBoxPosY;
@@ -93,13 +96,13 @@ namespace FloatyImage
 
       if (_isTitlebarHidden)
       {
-        _menuItemToggleLock.Text = LockString;
+        _menuItemTogglePin.Text = PinString;
         FormBorderStyle = FormBorderStyle.Sizable;
         Location = new Point(Location.X - _borderWidth, Location.Y - _titlebarHeight);
       }
       else
       {
-        _menuItemToggleLock.Text = UnlockString;
+        _menuItemTogglePin.Text = UnpinString;
         FormBorderStyle = FormBorderStyle.None;
         Location = new Point(Location.X + _borderWidth, Location.Y + _titlebarHeight);
       }
@@ -288,7 +291,7 @@ namespace FloatyImage
     {
       var isAlwaysOnTop = TopLevel && TopMost;
       TopMost = !isAlwaysOnTop;
-      _menuItemAlwaysOnTop.Text = !isAlwaysOnTop ? StopPersistingString : PersistString;
+      _menuItemToggleFloat.Text = !isAlwaysOnTop ? UnfloatString : FloatString;
     }
 
     private static List<string> GetAllFiles(string[] paths)
@@ -320,6 +323,16 @@ namespace FloatyImage
 
         return files;
       }
+    }
+
+    private void ToggleImagePositionLock(object sender = null, EventArgs e = null)
+    {
+      _isImagePositionLocked = !_isImagePositionLocked;
+
+      _menuItemToggleLock.Text = _isImagePositionLocked ? UnlockString : LockString;
+
+      SpecialCursor = _isImagePositionLocked ? LockedCursorDefault : SpecialCursorDefault;
+      pictureBox1.Cursor = _isImagePositionLocked ? SpecialCursor : Cursors.Default;
     }
 
     private static void LogException(Exception ex)

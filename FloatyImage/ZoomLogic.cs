@@ -7,7 +7,10 @@ namespace FloatyImage
   {
     private void DebounceTimer_Tick(object sender, EventArgs e)
     {
-      Zoom();
+      if (_isImagePositionLocked == false)
+      {
+        Zoom();
+      }
 
       _zoomDebounceTimer.Stop();
     }
