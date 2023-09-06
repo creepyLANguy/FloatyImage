@@ -103,7 +103,7 @@ namespace FloatyImage
         case Keys.L:
           ToggleImagePositionLock(sender, e);
           break;
-        case Keys.F:
+        case Keys.T:
           ToggleAlwaysOnTop(sender, e);
           break;
         case Keys.R:
@@ -212,7 +212,7 @@ namespace FloatyImage
         return;
       }
 
-      pictureBox1.Cursor = SpecialCursor;
+      pictureBox1.Cursor = _specialCursor;
     }
 
     private void PictureBox1_MouseLeave(object sender, EventArgs e)

@@ -12,7 +12,7 @@ namespace FloatyImage
 {
   public sealed partial class Form1 : Form
   {
-    private Cursor SpecialCursor = SpecialCursorDefault;
+    private Cursor _specialCursor = SpecialCursorDefault;
 
     private readonly HatchBrush _backgroundBrush 
       = new HatchBrush(BgStyle, BgColor1, BgColor2);
@@ -331,8 +331,8 @@ namespace FloatyImage
 
       _menuItemToggleLock.Text = _isImagePositionLocked ? UnlockString : LockString;
 
-      SpecialCursor = _isImagePositionLocked ? LockedCursorDefault : SpecialCursorDefault;
-      pictureBox1.Cursor = _isImagePositionLocked ? SpecialCursor : Cursors.Default;
+      _specialCursor = _isImagePositionLocked ? LockedCursorDefault : SpecialCursorDefault;
+      pictureBox1.Cursor = _isImagePositionLocked ? _specialCursor : Cursors.Default;
     }
 
     private static void LogException(Exception ex)
