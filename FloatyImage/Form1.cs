@@ -34,6 +34,7 @@ namespace FloatyImage
     private int _borderWidth;
     private int _titlebarHeight;
     private bool _isTitlebarHidden;
+    private bool _isImagePisitionLocked;
 
     private int _cachedPictureBoxPosX;
     private int _cachedPictureBoxPosY;
@@ -93,13 +94,13 @@ namespace FloatyImage
 
       if (_isTitlebarHidden)
       {
-        _menuItemToggleLock.Text = LockString;
+        _menuItemTogglePin.Text = PinString;
         FormBorderStyle = FormBorderStyle.Sizable;
         Location = new Point(Location.X - _borderWidth, Location.Y - _titlebarHeight);
       }
       else
       {
-        _menuItemToggleLock.Text = UnlockString;
+        _menuItemTogglePin.Text = UnpinString;
         FormBorderStyle = FormBorderStyle.None;
         Location = new Point(Location.X + _borderWidth, Location.Y + _titlebarHeight);
       }
@@ -288,7 +289,7 @@ namespace FloatyImage
     {
       var isAlwaysOnTop = TopLevel && TopMost;
       TopMost = !isAlwaysOnTop;
-      _menuItemAlwaysOnTop.Text = !isAlwaysOnTop ? StopPersistingString : PersistString;
+      _menuItemToggleFloat.Text = !isAlwaysOnTop ? UnfloatString : FloatString;
     }
 
     private static List<string> GetAllFiles(string[] paths)
@@ -320,6 +321,13 @@ namespace FloatyImage
 
         return files;
       }
+    }
+
+    private void ToggleImagePositionLock(object sender = null, EventArgs e = null)
+    {
+      _isImagePisitionLocked = !_isImagePisitionLocked;
+
+      _menuItemToggleLock.Text = _isImagePisitionLocked ? UnlockString : LockString;
     }
 
     private static void LogException(Exception ex)

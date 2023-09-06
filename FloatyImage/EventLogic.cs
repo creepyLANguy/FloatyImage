@@ -97,8 +97,11 @@ namespace FloatyImage
         case Keys.O:
           ShowOpenDialog(sender, e);
           break;
-        case Keys.L:
+        case Keys.P:
           ToggleTitlebar(sender, e);
+          break;
+        case Keys.L:
+          ToggleImagePositionLock(sender, e);
           break;
         case Keys.F:
           ToggleAlwaysOnTop(sender, e);
