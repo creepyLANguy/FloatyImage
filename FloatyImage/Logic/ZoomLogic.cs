@@ -3,7 +3,7 @@ using System;
 
 namespace FloatyImage
 {
-  public partial class Form1
+  public sealed partial class Form1
   {
     private void DebounceTimer_Tick(object sender, EventArgs e)
     {

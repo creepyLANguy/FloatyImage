@@ -47,6 +47,8 @@ namespace FloatyImage
     {
       InitializeComponent();
 
+      LoadConfig();
+
       _zoomDebounceTimer.Interval = DebounceTimerInterval;
       _zoomDebounceTimer.Tick += DebounceTimer_Tick;
 

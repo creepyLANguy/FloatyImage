@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace FloatyImage
 {
-  public partial class Form1
+  public sealed partial class Form1
   {
     private void SetupEventHandlers()
     {
@@ -86,7 +86,6 @@ namespace FloatyImage
       {
         case Keys.V:
           Paste(sender, e);
-          Copy(sender, e);
           break;
         case Keys.C:
           Copy(sender, e);
@@ -109,7 +108,7 @@ namespace FloatyImage
         case Keys.R:
           ResetPictureBoxPosition(sender, e);
           break;
-        case Keys.Z:
+        case Keys.D1:
           ZoomOneToOne(sender, e);
           break;
         default:

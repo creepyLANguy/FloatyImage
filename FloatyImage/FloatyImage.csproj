@@ -49,6 +49,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Definitions\HotKey.cs" />
+    <Compile Include="Definitions\HotKeyAction.cs" />
+    <Compile Include="Logic\ConfigLogic.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Logic\EventLogic.cs">
       <SubType>Form</SubType>
     </Compile>
