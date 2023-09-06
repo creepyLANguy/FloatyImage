@@ -224,5 +224,22 @@ namespace FloatyImage
 
       pictureBox1.Cursor = Cursors.Default;
     }
+
+    private void ContextMenu_Opening(object sender, EventArgs e)
+    {
+      var hasImage = pictureBox1.Image != null;
+      _menuItemCut.Enabled = hasImage;
+      _menuItemCopy.Enabled = hasImage;
+      _menuItemPaste.Enabled = Clipboard.ContainsImage();
+      _menuItemRecenter.Enabled = hasImage;
+      _menuItemOneToOne.Enabled = hasImage;
+
+      DisplayCurrentPixelColour();
+    }
+
+    private void ContextMenu_Closing(object sender, EventArgs e)
+    {
+      btn_colour.Visible = false;
+    }
   }
 }
