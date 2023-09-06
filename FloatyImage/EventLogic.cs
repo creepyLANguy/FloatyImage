@@ -119,7 +119,6 @@ namespace FloatyImage
 
     private void Form1_Resize(object sender, EventArgs e)
     {
-      //We are prolly toggling lock state
       if ((int)Opacity != 1)
       {
         return;
@@ -138,7 +137,6 @@ namespace FloatyImage
 
     private void Form1_ResizeBegin(object sender, EventArgs e)
     {
-      //We are prolly toggling lock state
       if ((int)Opacity != 1)
       {
         return;
