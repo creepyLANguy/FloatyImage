@@ -109,6 +109,9 @@ namespace FloatyImage
         case Keys.R:
           ResetPictureBoxPosition(sender, e);
           break;
+        case Keys.Z:
+          ZoomOneToOne(sender, e);
+          break;
         default:
           return;
       }
@@ -172,6 +175,13 @@ namespace FloatyImage
 
     private void PictureBox1_MouseUp(object sender, MouseEventArgs e)
     {
+      if (e.Button == MouseButtons.Middle)
+      {
+        _isDragging = false;
+        ToggleImagePositionLock();
+        return;
+      }
+
       _isDragging = false;
       _cachedPictureBoxPosX = pictureBox1.Left;
       _cachedPictureBoxPosY = pictureBox1.Top;
@@ -184,7 +194,12 @@ namespace FloatyImage
         return;
       }
 
-      if (e.Button != MouseButtons.Right && _isDragging)
+      if (_isImagePositionLocked)
+      {
+        return;
+      }
+
+      if (e.Button == MouseButtons.Left && _isDragging)
       {
         pictureBox1.Left += e.X - _mouseLocation.X;
         pictureBox1.Top += e.Y - _mouseLocation.Y;
@@ -199,7 +214,7 @@ namespace FloatyImage
         return;
       }
 
-      pictureBox1.Cursor = Cursors.Hand;
+      pictureBox1.Cursor = SpecialCursor;
     }
 
     private void PictureBox1_MouseLeave(object sender, EventArgs e)

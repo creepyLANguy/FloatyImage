@@ -7,11 +7,13 @@ namespace FloatyImage
 {
   public sealed partial class Form1
   {
+    private static readonly Cursor SpecialCursorDefault = Cursors.Hand;
+    private static readonly Cursor LockedCursorDefault = Cursors.Default;
+
     private const int ZoomPercentageMin = 1;
     private const int ZoomPercentageMax = 500;
     private const int ZoomStep = 3;
     private const float ZoomComparisonMargin = 0.0f;
-
 
     private const int FadeIntervalMilliseconds = 10;
     private const double FadeOpacityStep = 0.1;
