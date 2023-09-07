@@ -36,9 +36,7 @@ namespace FloatyImage
       return mask;
     }
 
-    public static ModifierAlias GetModifierKeyMask(KeyEventArgs e)
-    {
-      return GetModifierKeyMask(e.Control, e.Alt, e.Shift);
-    }
+    public static ModifierAlias GetModifierKeyMask(KeyEventArgs e) => 
+      GetModifierKeyMask(e.Control, e.Alt, e.Shift);
   }
 }
