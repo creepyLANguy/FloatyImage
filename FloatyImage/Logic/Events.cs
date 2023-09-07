@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace FloatyImage
 {
-  public partial class Form1
+  public sealed partial class Form1
   {
     private void SetupEventHandlers()
     {
@@ -69,51 +69,59 @@ namespace FloatyImage
 
     private void Form1_KeyDown(object sender, KeyEventArgs e)
     {
-      switch (e.KeyCode)
+      foreach (var hotKey in _hotKeys)
       {
-        case Keys.Delete:
-        case Keys.Back:
-          ClearImage();
-          break;
-      }
+        var modifierMask = ModiferKeyUtils.GetModifierKeyMask(e);
 
-      if (e.Control == false)
-      {
-        return;
-      }
-
-      switch (e.KeyCode)
-      {
-        case Keys.V:
-          Paste(sender, e);
-          Copy(sender, e);
-          break;
-        case Keys.C:
-          Copy(sender, e);
-          break;
-        case Keys.X:
-          Cut(sender, e);
-          break;
-        case Keys.O:
-          ShowOpenDialog(sender, e);
-          break;
-        case Keys.P:
-          ToggleTitlebar(sender, e);
-          break;
-        case Keys.L:
-          ToggleImagePositionLock(sender, e);
-          break;
-        case Keys.T:
-          ToggleAlwaysOnTop(sender, e);
-          break;
-        case Keys.R:
-          ResetPictureBoxPosition(sender, e);
-          break;
-        case Keys.Z:
-          ZoomOneToOne(sender, e);
-          break;
-        default:
+        if (hotKey.ModifierMask != modifierMask)
+        {
+          continue;
+        }
+        
+        if (hotKey.Key == e.KeyCode)
+        {
+          ExecuteAction(hotKey.Action);
           return;
+        }
+      }
+
+      void ExecuteAction(HotKeyAction action)
+      {
+        switch (action)
+        {
+          case HotKeyAction.Clear:
+            ClearImage();
+            break;
+          case HotKeyAction.Cut:
+            Cut(sender, e);
+            break;
+          case HotKeyAction.Copy:
+            Copy(sender, e);
+            break;
+          case HotKeyAction.Paste:
+            Paste(sender, e);
+            break;
+          case HotKeyAction.Open:
+            ShowOpenDialog(sender, e);
+            break;
+          case HotKeyAction.TogglePin:
+            ToggleTitlebar(sender, e);
+            break;
+          case HotKeyAction.ToggleLock:
+            ToggleImagePositionLock(sender, e);
+            break;
+          case HotKeyAction.ToggleFloat:
+            ToggleAlwaysOnTop(sender, e);
+            break;
+          case HotKeyAction.Recenter:
+            ResetPictureBoxPosition(sender, e);
+            break;
+          case HotKeyAction.ActualSize:
+            ZoomOneToOne(sender, e);
+            break;
+          default:
+            throw new ArgumentOutOfRangeException(nameof(action), action, null);
+        }
       }
     }
 

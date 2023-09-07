@@ -9,7 +9,7 @@ using Image = System.Drawing.Image;
 
 namespace FloatyImage
 {
-  public partial class Form1
+  public sealed partial class Form1
   {
     private void LoadNextFile(List<string> paths)
     {

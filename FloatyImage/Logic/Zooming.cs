@@ -3,7 +3,7 @@ using System;
 
 namespace FloatyImage
 {
-  public partial class Form1
+  public sealed partial class Form1
   {
     private void DebounceTimer_Tick(object sender, EventArgs e)
     {
@@ -73,6 +73,11 @@ namespace FloatyImage
 
     private void ZoomOneToOne(object sender = null, EventArgs e = null)
     {
+      if (pictureBox1.Image == null)
+      {
+        return;
+      }
+
       pictureBox1.Width = pictureBox1.Image.Width;
       pictureBox1.Height = pictureBox1.Image.Height;
 

@@ -36,6 +36,9 @@
     <ApplicationIcon>Assets\DefaultIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,7 +52,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Logic\EventLogic.cs">
+    <Compile Include="Definitions\HotKey.cs" />
+    <Compile Include="Definitions\HotKeyAction.cs" />
+    <Compile Include="Logic\Config.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Logic\Events.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\Form1.cs">
@@ -61,16 +69,17 @@
     <Compile Include="Definitions\ContextMenu.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Logic\FileLoadLogic.cs">
+    <Compile Include="Logic\Loading.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Logic\ModifierKeys.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Definitions\PropertyDefinitions.cs">
+    <Compile Include="Definitions\Properties.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Definitions\FloatyStrings.cs" />
-    <Compile Include="Logic\ZoomLogic.cs">
+    <Compile Include="Logic\Zooming.cs">
       <SubType>Form</SubType>
     </Compile>
     <EmbeddedResource Include="Forms\Form1.resx">
@@ -86,6 +95,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -12,6 +12,8 @@ namespace FloatyImage
 {
   public sealed partial class Form1 : Form
   {
+    private readonly List<HotKey> _hotKeys;
+
     private Cursor _specialCursor = SpecialCursorDefault;
 
     private readonly HatchBrush _backgroundBrush 
@@ -46,6 +48,8 @@ namespace FloatyImage
     public Form1(string[] args)
     {
       InitializeComponent();
+
+      _hotKeys = ReadHotKeyConfig();
 
       _zoomDebounceTimer.Interval = DebounceTimerInterval;
       _zoomDebounceTimer.Tick += DebounceTimer_Tick;
@@ -277,6 +281,11 @@ namespace FloatyImage
 
     private void ResetPictureBoxPosition(object sender = null, EventArgs e = null)
     {
+      if (pictureBox1.Image == null)
+      {
+        return;
+      }
+
       pictureBox1.Width = ClientSize.Width;
       pictureBox1.Height = ClientSize.Height;
 
