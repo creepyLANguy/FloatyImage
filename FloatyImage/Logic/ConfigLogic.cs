@@ -1,19 +1,38 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace FloatyImage
 {
   public sealed partial class Form1
   {
-    private static void LoadConfig()
+    public List<HotKey> ReadHotKeyConfig()
     {
-      if (File.Exists(ConfigFile) == false)
+      try
       {
-        return;
-      }
+        var jsonString = File.ReadAllText(ConfigFile);
 
-      var configFileContents = File.ReadAllText(ConfigFile);
-      //AL.
-      //var configJson = configFileContents.toJsonOrSomethingIDunno...
+        return JsonConvert.DeserializeObject<List<HotKey>>(jsonString);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+
+        SaveHotKeyConfig(DefaultHotKeys);
+
+        return DefaultHotKeys;
+      }
+    }
+
+    public static void SaveHotKeyConfig(List<HotKey> hotKeys)
+    {
+      var jsonString = JsonConvert.SerializeObject(hotKeys, Formatting.Indented);
+
+      using (var sw = File.CreateText(ConfigFile))
+      {
+        sw.WriteLine(jsonString);
+      }
     }
   }
 }

@@ -1,27 +1,59 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System;
 using System.Windows.Forms;
 
 namespace FloatyImage
 {
-  internal class HotKey
+  public class HotKey
   {
     public bool Ctrl;
     public bool Alt;
     public bool Shift;
-    public bool Win;
 
-    public List<Keys> Keys;
-    
-    public List<HotKeyAction> Actions;
+    [JsonConverter(typeof(KeysConverter))]
+    public Keys Key { get; set; }
 
-    public HotKey(bool ctrl, bool alt, bool shift, bool win, List<Keys> keys, List<HotKeyAction> actions)
+    [JsonConverter(typeof(HotKeyActionConverter))]
+    public HotKeyAction Action { get; set; }
+
+    public HotKey(bool ctrl, bool alt, bool shift, bool win, Keys key, HotKeyAction action)
     {
       Ctrl = ctrl;
       Alt = alt;
       Shift = shift;
-      Win = win;
-      Keys = keys;
-      Actions = actions;
+      Key = key;
+      Action = action;
     }
+  }
+
+  public class KeysConverter : JsonConverter
+  {
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    {
+      if (value is Keys key)
+      {
+        writer.WriteValue(key.ToString());
+      }
+      else
+      {
+        throw new InvalidOperationException("Invalid type for KeysConverter.");
+      }
+    }
+
+    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    {
+      if (reader.TokenType == JsonToken.String)
+      {
+        if (Enum.TryParse<Keys>((string)reader.Value, out var key))
+        {
+          return key;
+        }
+      }
+
+      throw new InvalidOperationException("Invalid JSON value for Keys.");
+    }
+
+    public override bool CanConvert(Type objectType) =>
+      objectType == typeof(Keys);
   }
 }

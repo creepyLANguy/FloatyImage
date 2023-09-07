@@ -12,6 +12,8 @@ namespace FloatyImage
 {
   public sealed partial class Form1 : Form
   {
+    private List<HotKey> _hotKeys;
+
     private Cursor _specialCursor = SpecialCursorDefault;
 
     private readonly HatchBrush _backgroundBrush 
@@ -47,7 +49,7 @@ namespace FloatyImage
     {
       InitializeComponent();
 
-      LoadConfig();
+      _hotKeys = ReadHotKeyConfig();
 
       _zoomDebounceTimer.Interval = DebounceTimerInterval;
       _zoomDebounceTimer.Tick += DebounceTimer_Tick;

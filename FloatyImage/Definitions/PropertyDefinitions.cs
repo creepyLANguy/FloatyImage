@@ -33,23 +33,23 @@ namespace FloatyImage
     private const HatchStyle BgStyle = HatchStyle.LargeGrid;
     private static readonly Color OverlayColor = Color.FromArgb(128, Color.MediumTurquoise);
 
-    private List<HotKey> DefaultHotKeys = new List<HotKey>()
+    private static readonly List<HotKey> DefaultHotKeys = new List<HotKey>()
     {
-      new HotKey(false, false, false, false, new List<Keys>(){Keys.X}, new List<HotKeyAction>() {HotKeyAction.Clear} ),
-      new HotKey(false, false, false, false, new List<Keys>(){Keys.Back}, new List<HotKeyAction>() {HotKeyAction.Clear} ),
+      new HotKey(false, false, false, false, Keys.Back, HotKeyAction.Clear),
+      new HotKey(false, false, false, false, Keys.Delete, HotKeyAction.Clear),
 
-      new HotKey(true, false, false, false, new List<Keys>(){Keys.X}, new List<HotKeyAction>() {HotKeyAction.Cut} ), 
-      new HotKey(true, false, false, false, new List<Keys>(){Keys.C}, new List<HotKeyAction>() {HotKeyAction.Copy} ), 
-      new HotKey(true, false, false, false, new List<Keys>(){Keys.Z}, new List<HotKeyAction>() {HotKeyAction.Paste} ),
+      new HotKey(true, false, false, false, Keys.X, HotKeyAction.Cut),
+      new HotKey(true, false, false, false, Keys.C, HotKeyAction.Copy),
+      new HotKey(true, false, false, false, Keys.Z, HotKeyAction.Paste),
 
-      new HotKey(true, false, false, false, new List<Keys>(){Keys.O}, new List<HotKeyAction>() {HotKeyAction.Open} ),
+      new HotKey(true, false, false, false, Keys.O, HotKeyAction.Open),
 
-      new HotKey(true, false, false, false, new List<Keys>(){Keys.P}, new List<HotKeyAction>() {HotKeyAction.TogglePin } ),
-      new HotKey(true, false, false, false, new List<Keys>(){Keys.L}, new List<HotKeyAction>() {HotKeyAction.ToggleLock } ),
-      new HotKey(true, false, false, false, new List<Keys>(){Keys.T}, new List<HotKeyAction>() {HotKeyAction.ToggleFloat } ),
+      new HotKey(true, false, false, false, Keys.P, HotKeyAction.TogglePin),
+      new HotKey(true, false, false, false, Keys.L, HotKeyAction.ToggleLock),
+      new HotKey(true, false, false, false, Keys.T, HotKeyAction.ToggleFloat),
 
-      new HotKey(true, false, false, false, new List<Keys>(){Keys.R}, new List<HotKeyAction>() {HotKeyAction.Recenter } ),
-      new HotKey(true, false, false, false, new List<Keys>(){Keys.D1}, new List<HotKeyAction>() {HotKeyAction.ActualSize} )
+      new HotKey(true, false, false, false, Keys.R, HotKeyAction.Recenter),
+      new HotKey(true, false, false, false, Keys.D1, HotKeyAction.ActualSize)
     };
   }
 }
