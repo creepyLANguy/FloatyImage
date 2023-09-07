@@ -12,7 +12,7 @@ namespace FloatyImage
 {
   public sealed partial class Form1 : Form
   {
-    private List<HotKey> _hotKeys;
+    private readonly List<HotKey> _hotKeys;
 
     private Cursor _specialCursor = SpecialCursorDefault;
 
