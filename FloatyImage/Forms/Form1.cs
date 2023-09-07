@@ -281,6 +281,11 @@ namespace FloatyImage
 
     private void ResetPictureBoxPosition(object sender = null, EventArgs e = null)
     {
+      if (pictureBox1.Image == null)
+      {
+        return;
+      }
+
       pictureBox1.Width = ClientSize.Width;
       pictureBox1.Height = ClientSize.Height;
 

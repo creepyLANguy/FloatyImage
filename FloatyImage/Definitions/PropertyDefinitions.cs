@@ -35,21 +35,21 @@ namespace FloatyImage
 
     private static readonly List<HotKey> DefaultHotKeys = new List<HotKey>()
     {
-      new HotKey(false, false, false, false, Keys.Back, HotKeyAction.Clear),
-      new HotKey(false, false, false, false, Keys.Delete, HotKeyAction.Clear),
+      new HotKey(false, false, false, Keys.Back, HotKeyAction.Clear),
+      new HotKey(false, false, false, Keys.Delete, HotKeyAction.Clear),
 
-      new HotKey(true, false, false, false, Keys.X, HotKeyAction.Cut),
-      new HotKey(true, false, false, false, Keys.C, HotKeyAction.Copy),
-      new HotKey(true, false, false, false, Keys.Z, HotKeyAction.Paste),
+      new HotKey(true, false, false, Keys.X, HotKeyAction.Cut),
+      new HotKey(true, false, false, Keys.C, HotKeyAction.Copy),
+      new HotKey(true, false, false, Keys.Z, HotKeyAction.Paste),
 
-      new HotKey(true, false, false, false, Keys.O, HotKeyAction.Open),
+      new HotKey(true, false, false, Keys.O, HotKeyAction.Open),
 
-      new HotKey(true, false, false, false, Keys.P, HotKeyAction.TogglePin),
-      new HotKey(true, false, false, false, Keys.L, HotKeyAction.ToggleLock),
-      new HotKey(true, false, false, false, Keys.T, HotKeyAction.ToggleFloat),
+      new HotKey(true, false, false, Keys.P, HotKeyAction.TogglePin),
+      new HotKey(true, false, false, Keys.L, HotKeyAction.ToggleLock),
+      new HotKey(true, false, false, Keys.T, HotKeyAction.ToggleFloat),
 
-      new HotKey(true, false, false, false, Keys.R, HotKeyAction.Recenter),
-      new HotKey(true, false, false, false, Keys.D1, HotKeyAction.ActualSize)
+      new HotKey(true, false, false, Keys.R, HotKeyAction.Recenter),
+      new HotKey(true, false, false, Keys.D1, HotKeyAction.ActualSize)
     };
   }
 }

@@ -71,21 +71,13 @@ namespace FloatyImage
     {
       foreach (var hotKey in _hotKeys)
       {
-        if (hotKey.Ctrl & e.Control == false)
+        var modifierMask = ModiferKeyUtils.GetModifierKeyMask(e);
+
+        if (hotKey.ModifierMask != modifierMask)
         {
           continue;
         }
-
-        if (hotKey.Alt & e.Alt == false)
-        {
-          continue;
-        }
-
-        if (hotKey.Shift & e.Shift == false)
-        {
-          continue;
-        }
-
+        
         if (hotKey.Key == e.KeyCode)
         {
           ExecuteAction(hotKey.Action);

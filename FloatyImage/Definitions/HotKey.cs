@@ -10,19 +10,23 @@ namespace FloatyImage
     public bool Alt;
     public bool Shift;
 
+    public int ModifierMask;
+
     [JsonConverter(typeof(KeysConverter))]
     public Keys Key { get; set; }
 
     [JsonConverter(typeof(HotKeyActionConverter))]
     public HotKeyAction Action { get; set; }
 
-    public HotKey(bool ctrl, bool alt, bool shift, bool win, Keys key, HotKeyAction action)
+    public HotKey(bool ctrl, bool alt, bool shift, Keys key, HotKeyAction action)
     {
       Ctrl = ctrl;
       Alt = alt;
       Shift = shift;
       Key = key;
       Action = action;
+
+      ModifierMask = ModiferKeyUtils.GetModifierKeyMask(ctrl, alt, shift);
     }
   }
 
@@ -56,4 +60,6 @@ namespace FloatyImage
     public override bool CanConvert(Type objectType) =>
       objectType == typeof(Keys);
   }
+
+
 }
