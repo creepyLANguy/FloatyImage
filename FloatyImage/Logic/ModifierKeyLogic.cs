@@ -1,39 +1,42 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 
 namespace FloatyImage
 {
   public class ModiferKeyUtils
   {
-    public struct ModifierAliases
+    [Flags]
+    public enum ModifierAlias
     {
-      public static int Control = 1;
-      public static int Alt = 2;
-      public static int Shift = 4;
+      None = 0,
+      Control = 1,
+      Alt = 2,
+      Shift = 4
     }
 
-    public static int GetModifierKeyMask(bool control, bool alt, bool shift)
+    public static ModifierAlias GetModifierKeyMask(bool control, bool alt, bool shift)
     {
-      var mask = 0;
+      var mask = ModifierAlias.None;
 
       if (control)
       {
-        mask += ModifierAliases.Control;
+        mask |= ModifierAlias.Control;
       }
 
       if (alt)
       {
-        mask += ModifierAliases.Alt;
+        mask |= ModifierAlias.Alt;
       }
 
       if (shift)
       {
-        mask += ModifierAliases.Shift;
+        mask |= ModifierAlias.Shift;
       }
 
       return mask;
     }
 
-    public static int GetModifierKeyMask(KeyEventArgs e)
+    public static ModifierAlias GetModifierKeyMask(KeyEventArgs e)
     {
       return GetModifierKeyMask(e.Control, e.Alt, e.Shift);
     }

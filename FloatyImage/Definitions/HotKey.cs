@@ -10,7 +10,7 @@ namespace FloatyImage
     public bool Alt;
     public bool Shift;
 
-    public int ModifierMask;
+    public ModiferKeyUtils.ModifierAlias ModifierMask;
 
     [JsonConverter(typeof(KeysConverter))]
     public Keys Key { get; set; }
