@@ -29,6 +29,20 @@ namespace FloatyImage
 
       ModifierMask = ModiferKeyUtils.GetModifierKeyMask(ctrl, alt, shift);
     }
+
+    public override string ToString()
+    {
+
+      var str = Action.ToString() + " : ";
+      str += Ctrl ? "Ctrl + " : "";
+      str += Alt ? "Alt + " : "";
+      str += Shift? "Shift + " : "";
+      str += IsNumKey() ? Key.ToString().Substring(1) : Key;
+      return str;
+
+      bool IsNumKey() =>
+        Key is >= Keys.D0 and <= Keys.D9 or >= Keys.NumPad0 and <= Keys.NumPad9 or Keys.Decimal;
+    }
   }
 
   public class KeysConverter : JsonConverter

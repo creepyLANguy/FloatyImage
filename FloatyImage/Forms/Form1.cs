@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -71,6 +71,37 @@ namespace FloatyImage
 
       var files = GetAllFiles(args);
       LoadNextFile(files);
+    }
+
+    private static List<string> GetAllFiles(string[] paths)
+    {
+      var fileList = new List<string>();
+
+      foreach (var path in paths)
+      {
+        if (File.Exists(path))
+        {
+          fileList.Add(path);
+        }
+        else if (Directory.Exists(path))
+        {
+          fileList.AddRange(GetFilesFromDirectoryRecursively(path));
+        }
+      }
+
+      return fileList;
+
+      static IEnumerable<string> GetFilesFromDirectoryRecursively(string directory)
+      {
+        var files = Directory.GetFiles(directory).ToList();
+
+        foreach (var subDirectory in Directory.GetDirectories(directory))
+        {
+          files.AddRange(GetFilesFromDirectoryRecursively(subDirectory));
+        }
+
+        return files;
+      }
     }
 
     private void PaintOverlay(object sender, PaintEventArgs e)
@@ -305,37 +336,6 @@ namespace FloatyImage
       _menuItemToggleFloat.Text = !isAlwaysOnTop ? UnfloatString : FloatString;
     }
 
-    private static List<string> GetAllFiles(string[] paths)
-    {
-      var fileList = new List<string>();
-
-      foreach (var path in paths)
-      {
-        if (File.Exists(path))
-        {
-          fileList.Add(path);
-        }
-        else if (Directory.Exists(path))
-        {
-          fileList.AddRange(GetFilesFromDirectoryRecursively(path));
-        }
-      }
-
-      return fileList;
-
-      static IEnumerable<string> GetFilesFromDirectoryRecursively(string directory)
-      {
-        var files = Directory.GetFiles(directory).ToList();
-
-        foreach (var subDirectory in Directory.GetDirectories(directory))
-        {
-          files.AddRange(GetFilesFromDirectoryRecursively(subDirectory));
-        }
-
-        return files;
-      }
-    }
-
     private void ToggleImagePositionLock(object sender = null, EventArgs e = null)
     {
       _isImagePositionLocked = !_isImagePositionLocked;
@@ -344,6 +344,35 @@ namespace FloatyImage
 
       _specialCursor = _isImagePositionLocked ? LockedCursorDefault : SpecialCursorDefault;
       pictureBox1.Cursor = _isImagePositionLocked ? _specialCursor : Cursors.Default;
+    }
+
+    private void LaunchHelp(object sender = null, EventArgs e = null)
+    {
+      var caption = "(❓) " + ApplicationName + " - Help";
+
+      var message = "Shortcuts: ";
+      message += Environment.NewLine;
+      message += Environment.NewLine;
+      AppendHotKeySummary();
+      message += Environment.NewLine;
+      message += Environment.NewLine;
+      message += " You can customise shortcuts by editing \"" + ConfigFile + "\"";
+      message += Environment.NewLine;
+      message += Environment.NewLine;
+      message += "For more information, please visit:";
+      message += Environment.NewLine;
+      message += "https://github.com/creepyLANguy/FloatyImage";
+
+      MessageBox.Show(message, caption);
+
+      void AppendHotKeySummary()
+      {
+        foreach (var hotKey in _hotKeys)
+        {
+          message += hotKey + "\t";
+          message += Environment.NewLine;
+        }
+      }
     }
 
     private static void LogException(Exception ex)

@@ -4,19 +4,20 @@ namespace FloatyImage
 {
   public sealed partial class Form1
   {
-    private readonly ContextMenu _contextMenu = new ContextMenu();
-    private readonly MenuItem _menuItemOpen = new MenuItem("Open");
-    private readonly MenuItem _menuItemCut = new MenuItem("Cut");
-    private readonly MenuItem _menuItemCopy = new MenuItem("Copy");
-    private readonly MenuItem _menuItemPaste = new MenuItem("Paste");
-    private readonly MenuItem _menuItemRecenter = new MenuItem("Recenter");
-    private readonly MenuItem _menuItemOneToOne = new MenuItem("Actual Size");
-    private readonly MenuItem _menuItemTogglePin = new MenuItem(FloatyStrings.PinString);
-    private readonly MenuItem _menuItemToggleLock = new MenuItem(FloatyStrings.LockString);
-    private readonly MenuItem _menuItemToggleFloat = new MenuItem(FloatyStrings.UnfloatString);
-    private readonly MenuItem _menuItemColourDivider = new MenuItem("-");
-    private readonly MenuItem _menuItemColourHex = new MenuItem();
-    private readonly MenuItem _menuItemColourRgb = new MenuItem();
+    private readonly ContextMenu _contextMenu = new();
+    private readonly MenuItem _menuItemOpen = new("Open");
+    private readonly MenuItem _menuItemCut = new("Cut");
+    private readonly MenuItem _menuItemCopy = new("Copy");
+    private readonly MenuItem _menuItemPaste = new("Paste");
+    private readonly MenuItem _menuItemRecenter = new("Recenter");
+    private readonly MenuItem _menuItemOneToOne = new("Actual Size");
+    private readonly MenuItem _menuItemTogglePin = new(FloatyStrings.PinString);
+    private readonly MenuItem _menuItemToggleLock = new(FloatyStrings.LockString);
+    private readonly MenuItem _menuItemToggleFloat = new(FloatyStrings.UnfloatString);
+    private readonly MenuItem _menuItemColourDivider = new("-");
+    private readonly MenuItem _menuItemColourHex = new();
+    private readonly MenuItem _menuItemColourRgb = new();
+    private readonly MenuItem _menuItemHelp = new("Help");
 
     private void SetupContextMenu()
     {
@@ -34,8 +35,11 @@ namespace FloatyImage
       _menuItemToggleFloat.Click += ToggleAlwaysOnTop;
       _menuItemColourHex.Click += CopyTextToClipboard;
       _menuItemColourRgb.Click += CopyTextToClipboard;
+      _menuItemHelp.Click += LaunchHelp;
 
       _contextMenu.MenuItems.Add(_menuItemOpen);
+      _contextMenu.MenuItems.Add(new MenuItem("-"));
+      _contextMenu.MenuItems.Add(_menuItemHelp);
       _contextMenu.MenuItems.Add(new MenuItem("-"));
       _contextMenu.MenuItems.Add(_menuItemCut);
       _contextMenu.MenuItems.Add(_menuItemCopy);
