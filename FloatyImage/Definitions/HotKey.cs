@@ -61,6 +61,4 @@ namespace FloatyImage
     public override bool CanConvert(Type objectType) =>
       objectType == typeof(Keys);
   }
-
-
 }

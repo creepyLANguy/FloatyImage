@@ -33,7 +33,7 @@ namespace FloatyImage
     private const HatchStyle BgStyle = HatchStyle.LargeGrid;
     private static readonly Color OverlayColor = Color.FromArgb(128, Color.MediumTurquoise);
 
-    private static readonly List<HotKey> DefaultHotKeys = new List<HotKey>()
+    private static readonly List<HotKey> StandardHotKeys = new()
     {
       new HotKey(false, false, false, Keys.Back, HotKeyAction.Clear),
       new HotKey(false, false, false, Keys.Delete, HotKeyAction.Clear),
