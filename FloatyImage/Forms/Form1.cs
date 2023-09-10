@@ -12,21 +12,19 @@ namespace FloatyImage
 {
   public sealed partial class Form1 : Form
   {
-    private readonly List<HotKey> _hotKeys;
+    private List<HotKey> _hotKeys;
 
     private Cursor _specialCursor = SpecialCursorDefault;
 
     private readonly HatchBrush _backgroundBrush 
-      = new HatchBrush(BgStyle, BgColor1, BgColor2);
+      = new (BgStyle, BgColor1, BgColor2);
 
     private readonly SolidBrush _overlayBrush 
-      = new SolidBrush(OverlayColor);
+      = new(OverlayColor);
 
-    private readonly System.Windows.Forms.Timer _zoomDebounceTimer
-      = new System.Windows.Forms.Timer();
+    private readonly System.Windows.Forms.Timer _zoomDebounceTimer = new();
 
-    private readonly OpenFileDialog _openFileDialog
-      = new OpenFileDialog();
+    private readonly OpenFileDialog _openFileDialog = new();
 
     private float _zoomPercentageCurrent;
 
@@ -45,11 +43,15 @@ namespace FloatyImage
 
     private MouseEventArgs _cachedMouseEventArgs;
 
+    private FileSystemWatcher _fileWatcher;
+
     public Form1(string[] args)
     {
       InitializeComponent();
 
-      _hotKeys = ReadHotKeyConfig();
+      SetupHotKeys(StandardHotKeys);
+
+      RunFileWatcher();
 
       _zoomDebounceTimer.Interval = DebounceTimerInterval;
       _zoomDebounceTimer.Tick += DebounceTimer_Tick;
@@ -321,7 +323,7 @@ namespace FloatyImage
 
       return fileList;
 
-      IEnumerable<string> GetFilesFromDirectoryRecursively(string directory)
+      static IEnumerable<string> GetFilesFromDirectoryRecursively(string directory)
       {
         var files = Directory.GetFiles(directory).ToList();
 

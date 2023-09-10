@@ -7,21 +7,21 @@ namespace FloatyImage
 {
   public sealed partial class Form1
   {
-    public List<HotKey> ReadHotKeyConfig()
+    public void SetupHotKeys(List<HotKey> fallbackHotKeys)
     {
       try
       {
         var jsonString = File.ReadAllText(ConfigFile);
 
-        return JsonConvert.DeserializeObject<List<HotKey>>(jsonString);
+        _hotKeys = JsonConvert.DeserializeObject<List<HotKey>>(jsonString);
       }
       catch (Exception ex)
       {
         Console.WriteLine(ex.ToString());
 
-        SaveHotKeyConfig(DefaultHotKeys);
+        _hotKeys = fallbackHotKeys;
 
-        return DefaultHotKeys;
+        SaveHotKeyConfig(fallbackHotKeys);
       }
     }
 
@@ -29,10 +29,8 @@ namespace FloatyImage
     {
       var jsonString = JsonConvert.SerializeObject(hotKeys, Formatting.Indented);
 
-      using (var sw = File.CreateText(ConfigFile))
-      {
-        sw.WriteLine(jsonString);
-      }
+      using var sw = File.CreateText(ConfigFile);
+      sw.WriteLine(jsonString);
     }
   }
 }
