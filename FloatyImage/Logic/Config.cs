@@ -31,6 +31,7 @@ namespace FloatyImage
 
       using var sw = File.CreateText(ConfigFile);
       sw.WriteLine(jsonString);
+      sw.Close();
     }
   }
 }

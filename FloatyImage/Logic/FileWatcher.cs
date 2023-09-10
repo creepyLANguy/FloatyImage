@@ -9,9 +9,9 @@ namespace FloatyImage
     {
       _fileWatcher = new(Application.StartupPath);
       _fileWatcher.NotifyFilter = NotifyFilters.LastWrite;
-     _fileWatcher.Changed += OnChanged;
-     _fileWatcher.Filter = ConfigFile;
-     _fileWatcher.EnableRaisingEvents = true;
+      _fileWatcher.Changed += OnChanged;
+      _fileWatcher.Filter = ConfigFile;
+      _fileWatcher.EnableRaisingEvents = true;
     }
 
     private void OnChanged(object sender, FileSystemEventArgs e)
