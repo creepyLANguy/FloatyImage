@@ -350,28 +350,26 @@ namespace FloatyImage
     {
       var caption = "(❓) " + ApplicationName + " - Help";
 
-      var message = "Shortcuts: ";
-      message += Environment.NewLine;
-      message += Environment.NewLine;
-      AppendHotKeySummary();
-      message += Environment.NewLine;
-      message += Environment.NewLine;
-      message += " You can customise shortcuts by editing \"" + ConfigFile + "\"";
-      message += Environment.NewLine;
-      message += Environment.NewLine;
-      message += "For more information, please visit:";
-      message += Environment.NewLine;
+      var message = "Shortcuts: " + P;
+      message += GetHotKeySummary() + P;
+      message += " You can customise shortcuts by editing \"" + ConfigFile + "\"" + P;
+      message += "For more information, please visit:" + N;
       message += "https://github.com/creepyLANguy/FloatyImage";
 
       MessageBox.Show(message, caption);
 
-      void AppendHotKeySummary()
+      string GetHotKeySummary()
       {
-        foreach (var hotKey in _hotKeys)
+        var maxActionLength = _hotKeys.Max(hotKey => hotKey.ToString().IndexOf(":", StringComparison.Ordinal));
+
+        var summary = string.Join(Environment.NewLine, _hotKeys.Select(hotKey =>
         {
-          message += hotKey + "\t";
-          message += Environment.NewLine;
-        }
+          var parts = hotKey.ToString().Split(':');
+          var action = parts[0].PadRight(maxActionLength);
+          return action + parts[1];
+        }));
+
+        return summary;
       }
     }
 

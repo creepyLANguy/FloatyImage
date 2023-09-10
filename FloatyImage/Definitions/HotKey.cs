@@ -33,7 +33,7 @@ namespace FloatyImage
     public override string ToString()
     {
 
-      var str = Action.ToString() + " : ";
+      var str = Action + " : \t";
       str += Ctrl ? "Ctrl + " : "";
       str += Alt ? "Alt + " : "";
       str += Shift? "Shift + " : "";

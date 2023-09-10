@@ -8,6 +8,9 @@ namespace FloatyImage
 {
   public sealed partial class Form1
   {
+    private static readonly string N = Environment.NewLine; 
+    private static readonly string P = N + N;
+
     private const string ConfigFile = "config.json";
 
     private static readonly Cursor SpecialCursorDefault = Cursors.Hand;
