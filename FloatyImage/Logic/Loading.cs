@@ -113,7 +113,7 @@ namespace FloatyImage
 
       var selection =
         MessageBox.Show(message,
-          FailedToLoadImageCaptionString,
+          GenericErrorCaptionString,
           MessageBoxButtons.AbortRetryIgnore,
           MessageBoxIcon.Error,
           MessageBoxDefaultButton.Button1,

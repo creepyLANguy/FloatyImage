@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Forms;
 using Newtonsoft.Json;
+using static FloatyImage.FloatyStrings;
 
 namespace FloatyImage
 {
@@ -29,9 +31,25 @@ namespace FloatyImage
     {
       var jsonString = JsonConvert.SerializeObject(hotKeys, Formatting.Indented);
 
-      using var sw = File.CreateText(ConfigFile);
-      sw.WriteLine(jsonString);
-      sw.Close();
+      try
+      {
+        using var sw = File.CreateText(ConfigFile);
+        sw.WriteLine(jsonString);
+        sw.Close();
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine(e);
+
+        //MessageBox.Show(
+        //  FailedToHandleConfigUpdatesString,
+        //  GenericErrorCaptionString,
+        //  MessageBoxButtons.OK,
+        //  MessageBoxIcon.Warning,
+        //  MessageBoxDefaultButton.Button1,
+        //  MessageBoxOptions.ServiceNotification);
+      }
+      
     }
   }
 }

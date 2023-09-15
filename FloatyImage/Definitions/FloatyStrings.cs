@@ -18,8 +18,11 @@ namespace FloatyImage
     public const string FloatString = "Float";
     public const string UnfloatString = "Unfloat";
 
-    public static readonly string FailedToLoadImageCaptionString = ApplicationName + " Error";
+    public static readonly string GenericErrorCaptionString = ApplicationName + " Error";
+
     public const string FailedToLoadImageMessageString = "Failed to load image:";
+
+    public const string FailedToHandleConfigUpdatesString = "Failed to handle config updates.";
   }
 }
 
