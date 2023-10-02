@@ -49,6 +49,8 @@ namespace FloatyImage
     {
       InitializeComponent();
 
+      Directory.SetCurrentDirectory(Application.StartupPath);
+
       SetupHotKeys(StandardHotKeys);
 
       RunFileWatcher();
