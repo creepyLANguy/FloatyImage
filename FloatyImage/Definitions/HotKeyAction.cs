@@ -9,6 +9,7 @@ namespace FloatyImage
     Cut,
     Copy,
     Paste,
+    New,
     Open,
     TogglePin,
     ToggleLock,

@@ -101,6 +101,9 @@ namespace FloatyImage
           case HotKeyAction.Paste:
             Paste(sender, e);
             break;
+          case HotKeyAction.New:
+            LaunchNewInstance(sender, e);
+            break;
           case HotKeyAction.Open:
             ShowOpenDialog(sender, e);
             break;

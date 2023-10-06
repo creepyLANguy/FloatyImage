@@ -5,6 +5,7 @@ namespace FloatyImage
   public sealed partial class Form1
   {
     private readonly ContextMenu _contextMenu = new();
+    private readonly MenuItem _menuItemNew = new("New");
     private readonly MenuItem _menuItemOpen = new("Open");
     private readonly MenuItem _menuItemCut = new("Cut");
     private readonly MenuItem _menuItemCopy = new("Copy");
@@ -24,6 +25,7 @@ namespace FloatyImage
       _contextMenu.Popup += ContextMenu_Opening;
       _contextMenu.Collapse += ContextMenu_Closing;
 
+      _menuItemNew.Click += LaunchNewInstance;
       _menuItemOpen.Click += ShowOpenDialog;
       _menuItemCut.Click += Cut;
       _menuItemCopy.Click += Copy;
@@ -37,6 +39,7 @@ namespace FloatyImage
       _menuItemColourRgb.Click += CopyTextToClipboard;
       _menuItemHelp.Click += LaunchHelp;
 
+      _contextMenu.MenuItems.Add(_menuItemNew);
       _contextMenu.MenuItems.Add(_menuItemOpen);
       _contextMenu.MenuItems.Add(new MenuItem("-"));
       _contextMenu.MenuItems.Add(_menuItemHelp);

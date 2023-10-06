@@ -244,6 +244,11 @@ namespace FloatyImage
       Clipboard.SetText(((MenuItem) sender).Text);
     }
 
+    private void LaunchNewInstance(object sender, EventArgs e)
+    {
+      LaunchNextInstance("");
+    }
+
     private void ShowOpenDialog(object sender, EventArgs e)
     {
       if (_openFileDialog.ShowDialog() == DialogResult.OK)
@@ -354,7 +359,7 @@ namespace FloatyImage
 
       var message = "Shortcuts: " + P;
       message += GetHotKeySummary() + P;
-      message += " You can customise shortcuts by editing \"" + ConfigFile + "\"" + P;
+      message += "You can customise shortcuts by editing \"" + ConfigFile + "\"" + P;
       message += "For more information, please visit:" + N;
       message += "https://github.com/creepyLANguy/FloatyImage";
 

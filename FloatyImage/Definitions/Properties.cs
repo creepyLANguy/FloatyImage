@@ -43,8 +43,9 @@ namespace FloatyImage
 
       new HotKey(true, false, false, Keys.X, HotKeyAction.Cut),
       new HotKey(true, false, false, Keys.C, HotKeyAction.Copy),
-      new HotKey(true, false, false, Keys.Z, HotKeyAction.Paste),
+      new HotKey(true, false, false, Keys.V, HotKeyAction.Paste),
 
+      new HotKey(true, false, false, Keys.N, HotKeyAction.New),
       new HotKey(true, false, false, Keys.O, HotKeyAction.Open),
 
       new HotKey(true, false, false, Keys.P, HotKeyAction.TogglePin),
