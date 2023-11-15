@@ -68,7 +68,7 @@ namespace FloatyImage
 
       if (args.Length == 0 || string.IsNullOrEmpty(args[0]))
       {
-        LoadImage(Clipboard.GetImage(), PastedImageTitle);
+        Paste(null, null);
       }
       else
       {

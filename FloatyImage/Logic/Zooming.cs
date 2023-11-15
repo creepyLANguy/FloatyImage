@@ -81,7 +81,7 @@ namespace FloatyImage
       pictureBox1.Width = pictureBox1.Image.Width;
       pictureBox1.Height = pictureBox1.Image.Height;
 
-      pictureBox1.Location = new Point(-pictureBox1.Image.Width / 2, -pictureBox1.Image.Height / 2);
+      pictureBox1.Location = new Point(0, 0);
 
       StoreCurrentZoomValue();
 
