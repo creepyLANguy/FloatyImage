@@ -13,6 +13,11 @@ namespace FloatyImage
   {
     private void LoadNextFile(List<string> paths)
     {
+      if (paths.Count == 0)
+      {
+        return;
+      }
+
       var path = paths[0];
 
       var title = path.Substring(path.LastIndexOf('\\') + 1);
@@ -48,6 +53,11 @@ namespace FloatyImage
 
     private void LoadImage(Image image, string title)
     {
+      if (image == null)
+      {
+        return;
+      }
+
       Text = title;
       pictureBox1.Image = image;
 

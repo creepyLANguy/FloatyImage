@@ -68,11 +68,13 @@ namespace FloatyImage
 
       if (args.Length == 0 || string.IsNullOrEmpty(args[0]))
       {
-        return;
+        LoadImage(Clipboard.GetImage(), PastedImageTitle);
       }
-
-      var files = GetAllFiles(args);
-      LoadNextFile(files);
+      else
+      {
+        var files = GetAllFiles(args);
+        LoadNextFile(files);
+      }
     }
 
     private static List<string> GetAllFiles(string[] paths)
@@ -307,9 +309,8 @@ namespace FloatyImage
         {
           return;
         }
-
-        var image = Clipboard.GetImage();
-        LoadImage(image, PastedImageTitle);
+        
+        LoadImage(Clipboard.GetImage(), PastedImageTitle);
 
         ResetPictureBoxPosition();
       }
