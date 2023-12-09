@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
 using Newtonsoft.Json;
-using static FloatyImage.FloatyStrings;
 
 namespace FloatyImage
 {

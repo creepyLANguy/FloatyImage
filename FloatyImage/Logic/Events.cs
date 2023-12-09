@@ -184,13 +184,6 @@ namespace FloatyImage
 
     private void PictureBox1_MouseUp(object sender, MouseEventArgs e)
     {
-      if (e.Button == MouseButtons.Middle)
-      {
-        _isDragging = false;
-        ToggleImagePositionLock();
-        return;
-      }
-
       _isDragging = false;
       _cachedPictureBoxPosX = pictureBox1.Left;
       _cachedPictureBoxPosY = pictureBox1.Top;
