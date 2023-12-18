@@ -11,6 +11,21 @@ namespace FloatyImage
 {
   public sealed partial class Form1
   {
+    private void LoadingImagesOnStartup(string[] args)
+    {
+      var files = GetAllFiles(args);
+      if (files == null || files.Count == 0)
+      {
+        Paste(null, null);
+      }
+      else
+      {
+        LoadNextFile(files);
+      }
+
+      ShrinkWindowToImage();
+    }
+
     private void LoadNextFile(List<string> paths)
     {
       if (paths.Count == 0)
@@ -140,6 +155,5 @@ namespace FloatyImage
         Close();
       }
     }
-    
   }
 }

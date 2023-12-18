@@ -66,15 +66,55 @@ namespace FloatyImage
 
       Text = DefaultTitle;
 
-      if (args.Length == 0 || string.IsNullOrEmpty(args[0]))
+      LoadingImagesOnStartup(args);
+    }
+
+    private void ShrinkWindowToImage()
+    {
+      if (pictureBox1.Image == null)
       {
-        Paste(null, null);
+        return;
       }
-      else
+
+      var i = pictureBox1.Image.Size;
+      var p = pictureBox1.Size;
+      var w = Size;
+      var c = ClientSize;
+      var imageSize = new Size((int)(i.Width * (_zoomPercentageCurrent / 100)), (int)(i.Height * (_zoomPercentageCurrent / 100)));
+
+      var message = "";
+      message += "pictureBox1.Image.Size = " + i.Width + " , " + i.Height + "\n";
+      message += "pictureBox1.Size = " + p.Width + " , " + p.Height + "\n";
+      message += "window size = " + w.Width + " , " + w.Height + "\n";
+      message += "client size = " + c.Width + " , " + c.Height + "\n";
+      message += "image zoomed : " + imageSize.Width + " , " + imageSize.Height + "\n";
+      MessageBox.Show(message);
+
+      if (w.Width > c.Width)
       {
-        var files = GetAllFiles(args);
-        LoadNextFile(files);
+        Size = Size with {Width = imageSize.Width};
       }
+
+      if (w.Height > c.Height)
+      {
+        Size = Size with {Height = imageSize.Height};
+      }
+
+      var i2 = pictureBox1.Image.Size;
+      var p2 = pictureBox1.Size;
+      var w2 = Size;
+      var c2 = ClientSize;
+      var imageSize2 = new Size((int)(i2.Width * (_zoomPercentageCurrent/100)), (int)(i2.Height * (_zoomPercentageCurrent / 100)));
+
+      var message2 = "";
+      message2 += "pictureBox1.Image.Size = " + i2.Width + " , " + i2.Height + "\n";
+      message2 += "pictureBox1.Size = " + p2.Width + " , " + p2.Height + "\n";
+      message2 += "window size = " + w2.Width + " , " + w2.Height + "\n";
+      message2 += "client size = " + c2.Width + " , " + c2.Height + "\n";
+      message2 += "image zoomed : " + imageSize2.Width + " , " + imageSize2.Height + "\n";
+      MessageBox.Show(message2);
+
+      ResetPictureBoxPosition();
     }
 
     private static List<string> GetAllFiles(string[] paths)
