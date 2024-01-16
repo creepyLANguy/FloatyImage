@@ -4,6 +4,6 @@
 
 Supports pinning, locking the canvas, custom controls, colour picking, and other handy features. 
 
-![image](https://github.com/creepyLANguy/FloatyImage/assets/28150772/113174e7-e3ed-4105-a539-f8f44a9c37b4)
+![image](https://github.com/creepyLANguy/FloatyImage/assets/28150772/5fc1d6d7-a8a8-4aed-bc2e-a872064c1fea)
 
 - [View on GitHub](https://github.com/creepyLANguy/FloatyImage/)
