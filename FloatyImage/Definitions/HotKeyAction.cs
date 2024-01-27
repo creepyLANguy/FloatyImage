@@ -15,7 +15,9 @@ namespace FloatyImage
     ToggleLock,
     ToggleFloat,
     Recenter,
-    ActualSize
+    ActualSize,
+    RotateRight,
+    RotateLeft
   }
 
   public class HotKeyActionConverter : JsonConverter

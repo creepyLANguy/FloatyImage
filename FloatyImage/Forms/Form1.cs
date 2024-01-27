@@ -381,6 +381,28 @@ namespace FloatyImage
       }
     }
 
+    private void RotateRight(object sender = null, EventArgs e = null)
+    {
+      if (pictureBox1.Image == null)
+      {
+        return;
+      }
+
+      pictureBox1.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
+      Refresh();
+    }
+
+    private void RotateLeft(object sender = null, EventArgs e = null)
+    {
+      if (pictureBox1.Image == null)
+      {
+        return;
+      }
+
+      pictureBox1.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
+      Refresh();
+    }
+
     private static void LogException(Exception ex)
     {
       Console.WriteLine(ex.ToString());
