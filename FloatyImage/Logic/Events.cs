@@ -122,6 +122,12 @@ namespace FloatyImage
           case HotKeyAction.ActualSize:
             ZoomOneToOne(sender, e);
             break;
+          case HotKeyAction.RotateRight:
+            RotateRight(sender, e);
+            break;
+          case HotKeyAction.RotateLeft:
+            RotateLeft(sender, e);
+            break;
           default:
             throw new ArgumentOutOfRangeException(nameof(action), action, null);
         }
@@ -235,6 +241,8 @@ namespace FloatyImage
       _menuItemCut.Enabled = hasImage;
       _menuItemCopy.Enabled = hasImage;
       _menuItemPaste.Enabled = Clipboard.ContainsImage();
+      _menuItemRotateRight.Enabled = hasImage;
+      _menuItemRotateLeft.Enabled = hasImage;
       _menuItemRecenter.Enabled = hasImage;
       _menuItemOneToOne.Enabled = hasImage;
 

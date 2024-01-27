@@ -53,7 +53,10 @@ namespace FloatyImage
       new HotKey(true, false, false, Keys.T, HotKeyAction.ToggleFloat),
 
       new HotKey(true, false, false, Keys.R, HotKeyAction.Recenter),
-      new HotKey(true, false, false, Keys.D1, HotKeyAction.ActualSize)
+      new HotKey(true, false, false, Keys.D1, HotKeyAction.ActualSize),
+
+      new HotKey(true, false, false, Keys.K, HotKeyAction.RotateRight),
+      new HotKey(true, false, false, Keys.J, HotKeyAction.RotateLeft)
     };
   }
 }

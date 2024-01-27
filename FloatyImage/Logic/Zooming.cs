@@ -93,8 +93,6 @@ namespace FloatyImage
       var zoomRatio = (double)pictureBox1.ClientSize.Height / pictureBox1.Image.Height;
       _zoomPercentageCurrent = (int)(zoomRatio * 100);
     }
-
-    
   }
 }
 

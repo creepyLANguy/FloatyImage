@@ -10,6 +10,8 @@ namespace FloatyImage
     private readonly MenuItem _menuItemCut = new("Cut");
     private readonly MenuItem _menuItemCopy = new("Copy");
     private readonly MenuItem _menuItemPaste = new("Paste");
+    private readonly MenuItem _menuItemRotateRight = new("Rotate Right");
+    private readonly MenuItem _menuItemRotateLeft = new("Rotate Left");
     private readonly MenuItem _menuItemRecenter = new("Recenter");
     private readonly MenuItem _menuItemOneToOne = new("Actual Size");
     private readonly MenuItem _menuItemTogglePin = new(FloatyStrings.PinString);
@@ -30,6 +32,8 @@ namespace FloatyImage
       _menuItemCut.Click += Cut;
       _menuItemCopy.Click += Copy;
       _menuItemPaste.Click += Paste;
+      _menuItemRotateRight.Click += RotateRight;
+      _menuItemRotateLeft.Click += RotateLeft;
       _menuItemRecenter.Click += ResetPictureBoxPosition;
       _menuItemOneToOne.Click += ZoomOneToOne;
       _menuItemTogglePin.Click += ToggleTitlebar;
@@ -48,6 +52,8 @@ namespace FloatyImage
       _contextMenu.MenuItems.Add(_menuItemCopy);
       _contextMenu.MenuItems.Add(_menuItemPaste);
       _contextMenu.MenuItems.Add(new MenuItem("-"));
+      _contextMenu.MenuItems.Add(_menuItemRotateRight);
+      _contextMenu.MenuItems.Add(_menuItemRotateLeft);
       _contextMenu.MenuItems.Add(_menuItemRecenter);
       _contextMenu.MenuItems.Add(_menuItemOneToOne);
       _contextMenu.MenuItems.Add(new MenuItem("-"));
