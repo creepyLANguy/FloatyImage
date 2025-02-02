@@ -90,12 +90,18 @@ namespace FloatyImage
 
       using (var backgroundBrush = new SolidBrush(backColour))
       {
-        e.Graphics.FillRectangle(backgroundBrush, e.Bounds.X, e.Bounds.Y, e.Bounds.Width , e.Bounds.Height - 1); //leave 1px padding at bottom
+        e.Graphics.FillRectangle(
+          backgroundBrush,
+          e.Bounds.X,
+          e.Bounds.Y,
+          e.Bounds.Width,
+          e.Bounds.Height - 1 //leave 1px padding at bottom
+        );
       }
 
       DrawColourText(item.Text, backColour, e);
 
-      Cursor = e.State.HasFlag(DrawItemState.Selected) ? Cursors.Cross: Cursors.Default;
+      Cursor = e.State.HasFlag(DrawItemState.Selected) ? Cursors.Cross : Cursors.Default;
     }
 
     private static void DrawColourText(string text, Color backColour, DrawItemEventArgs e)
@@ -115,10 +121,14 @@ namespace FloatyImage
 
     private void MenuItem_Measure(object sender, MeasureItemEventArgs e)
     {
-      //AL.//TODO - find some way to cache the intended size of the item and then refer to it here
-      e.ItemHeight = 25; // Adjust height
-      e.ItemWidth = 100; // Adjust width if needed
-    }
+      if (sender is not MenuItem item)
+      {
+        return;
+      }
 
+      var textSize = TextRenderer.MeasureText(item.Text, SystemFonts.MenuFont);
+      e.ItemHeight = (int)(textSize.Height * 2.0);
+      e.ItemWidth = (int)(textSize.Width * 2.0);
+    }
   }
 }
