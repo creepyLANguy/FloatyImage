@@ -1,3 +1,4 @@
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace FloatyImage
@@ -21,6 +22,8 @@ namespace FloatyImage
     private readonly MenuItem _menuItemColourHex = new();
     private readonly MenuItem _menuItemColourRgb = new();
     private readonly MenuItem _menuItemHelp = new("Help");
+
+    private static ColorConverter _colourConverter;
 
     private void SetupContextMenu()
     {
@@ -64,7 +67,45 @@ namespace FloatyImage
       _contextMenu.MenuItems.Add(_menuItemColourHex);
       _contextMenu.MenuItems.Add(_menuItemColourRgb);
 
+      _colourConverter = new ColorConverter();
+
+      _menuItemColourHex.OwnerDraw = true;
+      _menuItemColourHex.DrawItem += MenuItem_Draw;
+      _menuItemColourHex.MeasureItem += MenuItem_Measure;
+      _menuItemColourRgb.OwnerDraw = true;
+      _menuItemColourRgb.DrawItem += MenuItem_Draw;
+      _menuItemColourRgb.MeasureItem += MenuItem_Measure;
+
       ContextMenu = _contextMenu;
     }
+
+    private void MenuItem_Draw(object sender, DrawItemEventArgs e)
+    {
+      if (sender is not MenuItem item)
+      {
+        return;
+      }
+
+      var backColour = (Color?)_colourConverter.ConvertFromString(item.Text) ?? SystemColors.Control;
+
+      using (var backgroundBrush = new SolidBrush(backColour))
+      {
+        e.Graphics.FillRectangle(backgroundBrush, e.Bounds);
+      }
+
+      //AL. //TODO - do luminance check
+      using (var textBrush = new SolidBrush(Color.Black))
+      {
+        e.Graphics.DrawString(item.Text, e.Font, textBrush, e.Bounds.X + 2, e.Bounds.Y + 2);
+      }
+    }
+
+    private void MenuItem_Measure(object sender, MeasureItemEventArgs e)
+    {
+      //AL.//TODO - find some way to cache the intended size of the item and then refer to it here
+      e.ItemHeight = 25; // Adjust height
+      e.ItemWidth = 100; // Adjust width if needed
+    }
+
   }
 }
