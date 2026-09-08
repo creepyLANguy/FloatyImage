@@ -217,17 +217,17 @@ namespace FloatyImage
 
     private void PictureBox1_MouseEnter(object sender, EventArgs e)
     {
-      if (pictureBox1.Image == null)
+      if (HasContent == false)
       {
         return;
       }
 
-      pictureBox1.Cursor = _specialCursor;
+      pictureBox1.Cursor = _isImagePositionLocked ? LockedCursorDefault : _specialCursor;
     }
 
     private void PictureBox1_MouseLeave(object sender, EventArgs e)
     {
-      if (pictureBox1.Image == null)
+      if (HasContent == false)
       {
         return;
       }
@@ -237,21 +237,35 @@ namespace FloatyImage
 
     private void ContextMenu_Opening(object sender, EventArgs e)
     {
-      var hasImage = pictureBox1.Image != null;
-      _menuItemCut.Enabled = hasImage;
-      _menuItemCopy.Enabled = hasImage;
-      _menuItemPaste.Enabled = Clipboard.ContainsImage();
-      _menuItemRotateRight.Enabled = hasImage;
-      _menuItemRotateLeft.Enabled = hasImage;
-      _menuItemRecenter.Enabled = hasImage;
-      _menuItemOneToOne.Enabled = hasImage;
+      _menuItemCut.Enabled = HasContent;
+      _menuItemCopy.Enabled = HasContent;
+      _menuItemPaste.Enabled = Clipboard.ContainsImage() || Clipboard.ContainsText();
+      _menuItemRotateRight.Enabled = HasImageContent;
+      _menuItemRotateLeft.Enabled = HasImageContent;
+      _menuItemRecenter.Enabled = HasContent;
+      _menuItemOneToOne.Enabled = HasContent;
 
-      DisplayCurrentPixelColour();
+      if (HasImageContent)
+      {
+        DisplayCurrentPixelColour();
+      }
+      else
+      {
+        HideColourIndicators();
+      }
     }
 
     private void ContextMenu_Closing(object sender, EventArgs e)
     {
+      HideColourIndicators();
+    }
+
+    private void HideColourIndicators()
+    {
       btn_colour.Visible = false;
+      _menuItemColourDivider.Visible = false;
+      _menuItemColourHex.Visible = false;
+      _menuItemColourRgb.Visible = false;
     }
   }
 }
