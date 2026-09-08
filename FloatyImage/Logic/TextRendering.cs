@@ -38,7 +38,7 @@ namespace FloatyImage
       );
 
       using var graphics = Graphics.FromImage(bitmap);
-      graphics.Clear(Color.Transparent);
+      graphics.Clear(Color.White);
       graphics.SmoothingMode = SmoothingMode.HighQuality;
       graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 
