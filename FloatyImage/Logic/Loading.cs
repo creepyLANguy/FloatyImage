@@ -82,8 +82,8 @@ namespace FloatyImage
         }
 
         using var bitmap = new Bitmap(image, newWidth, newHeight);
-        using var iconBitmap = new Bitmap(bitmap);
-        Icon = Icon.FromHandle(iconBitmap.GetHicon());
+        using var icon = Icon.FromHandle(bitmap.GetHicon());
+        Icon = (Icon)icon.Clone();
       }
     }
 
