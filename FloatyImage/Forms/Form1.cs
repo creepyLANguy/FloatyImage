@@ -45,6 +45,12 @@ namespace FloatyImage
 
     private FileSystemWatcher _fileWatcher;
 
+    private string _textContent;
+
+    private bool HasContent => pictureBox1.Image != null || _textContent != null;
+    private bool HasImageContent => pictureBox1.Image != null;
+    private bool HasTextContent => _textContent != null;
+
     public Form1(string[] args)
     {
       InitializeComponent();
@@ -261,15 +267,22 @@ namespace FloatyImage
 
     private void Cut(object sender, EventArgs e)
     {
-      if (pictureBox1.Image == null)
+      if (HasContent == false)
       {
         return;
       }
 
       try
       {
+        if (HasTextContent)
+        {
+          Clipboard.SetText(_textContent);
+          ClearContent();
+          return;
+        }
+
         Clipboard.SetImage(pictureBox1.Image);
-        ClearImage();
+        ClearContent();
       }
       catch (Exception ex)
       {
@@ -279,20 +292,33 @@ namespace FloatyImage
 
     private void ClearImage()
     {
+      ClearContent();
+    }
+
+    private void ClearContent()
+    {
       Text = DefaultTitle;
       pictureBox1.Image = null;
+      _textContent = null;
       Icon = DefaultIcon;
+      pictureBox1.Cursor = Cursors.Default;
     }
 
     private void Copy(object sender, EventArgs e)
     {
-      if (pictureBox1.Image == null)
+      if (HasContent == false)
       {
         return;
       }
 
       try
       {
+        if (HasTextContent)
+        {
+          Clipboard.SetText(_textContent);
+          return;
+        }
+
         Clipboard.SetImage(pictureBox1.Image);
       }
       catch (Exception ex)
@@ -305,19 +331,44 @@ namespace FloatyImage
     {
       try
       {
-        if (Clipboard.ContainsImage() == false)
+        if (Clipboard.ContainsImage())
         {
+          LoadImage(Clipboard.GetImage(), PastedImageTitle);
+          ResetPictureBoxPosition();
           return;
         }
-        
-        LoadImage(Clipboard.GetImage(), PastedImageTitle);
 
-        ResetPictureBoxPosition();
+        if (Clipboard.ContainsText())
+        {
+          var text = Clipboard.GetText();
+          if (string.IsNullOrEmpty(text))
+          {
+            return;
+          }
+
+          LoadText(text, PastedTextTitle);
+          ResetPictureBoxPosition();
+        }
       }
       catch (Exception ex)
       {
         LogException(ex);
       }
+    }
+
+    private void LoadText(string text, string title)
+    {
+      if (string.IsNullOrEmpty(text))
+      {
+        return;
+      }
+
+      var renderedText = RenderText(text);
+      pictureBox1.Image?.Dispose();
+      pictureBox1.Image = renderedText;
+      _textContent = text;
+      Text = title;
+      Icon = DefaultIcon;
     }
 
     private void ResetPictureBoxPosition(object sender = null, EventArgs e = null)
@@ -351,7 +402,7 @@ namespace FloatyImage
       _menuItemToggleLock.Text = _isImagePositionLocked ? UnlockString : LockString;
 
       _specialCursor = _isImagePositionLocked ? LockedCursorDefault : SpecialCursorDefault;
-      pictureBox1.Cursor = _isImagePositionLocked ? _specialCursor : Cursors.Default;
+      pictureBox1.Cursor = _isImagePositionLocked ? _specialCursor : HasContent ? SpecialCursorDefault : Cursors.Default;
     }
 
     private void LaunchHelp(object sender = null, EventArgs e = null)
@@ -383,7 +434,7 @@ namespace FloatyImage
 
     private void RotateRight(object sender = null, EventArgs e = null)
     {
-      if (pictureBox1.Image == null)
+      if (pictureBox1.Image == null || HasTextContent)
       {
         return;
       }
@@ -394,7 +445,7 @@ namespace FloatyImage
 
     private void RotateLeft(object sender = null, EventArgs e = null)
     {
-      if (pictureBox1.Image == null)
+      if (pictureBox1.Image == null || HasTextContent)
       {
         return;
       }
