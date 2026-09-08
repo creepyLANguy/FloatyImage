@@ -48,7 +48,7 @@ namespace FloatyImage
     private string _textContent;
 
     private bool HasContent => pictureBox1.Image != null || _textContent != null;
-    private bool HasImageContent => pictureBox1.Image != null;
+    private bool HasImageContent => pictureBox1.Image != null && _textContent == null;
     private bool HasTextContent => _textContent != null;
 
     public Form1(string[] args)
@@ -238,6 +238,8 @@ namespace FloatyImage
       _menuItemColourHex.Visible = true;
       _menuItemColourRgb.Visible = true;
 
+      bitmap.Dispose();
+
       void HideColourIndicators()
       {
         btn_colour.Visible = false;
@@ -297,8 +299,11 @@ namespace FloatyImage
 
     private void ClearContent()
     {
-      Text = DefaultTitle;
+      var image = pictureBox1.Image;
       pictureBox1.Image = null;
+      image?.Dispose();
+
+      Text = DefaultTitle;
       _textContent = null;
       Icon = DefaultIcon;
       pictureBox1.Cursor = Cursors.Default;
@@ -364,8 +369,10 @@ namespace FloatyImage
       }
 
       var renderedText = RenderText(text);
-      pictureBox1.Image?.Dispose();
+      var previousImage = pictureBox1.Image;
       pictureBox1.Image = renderedText;
+      previousImage?.Dispose();
+
       _textContent = text;
       Text = title;
       Icon = DefaultIcon;
