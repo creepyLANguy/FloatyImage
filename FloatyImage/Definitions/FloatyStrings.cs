@@ -8,6 +8,7 @@ namespace FloatyImage
 
     public const string DefaultTitle = "(Right click on canvas or drag on images/folders to begin)";
     public const string PastedImageTitle = "[Pasted Image]";
+    public const string PastedTextTitle = "[Pasted Text]";
 
     public const string PinString = "Pin";
     public const string UnpinString = "Unpin";
@@ -25,5 +26,3 @@ namespace FloatyImage
     public const string FailedToHandleConfigUpdatesString = "Failed to handle config updates.";
   }
 }
-
-

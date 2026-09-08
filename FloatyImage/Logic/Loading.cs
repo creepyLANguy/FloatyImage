@@ -58,8 +58,12 @@ namespace FloatyImage
         return;
       }
 
-      Text = title;
+      var previousImage = pictureBox1.Image;
       pictureBox1.Image = image;
+      previousImage?.Dispose();
+
+      _textContent = null;
+      Text = title;
 
       SetIcon();
 
@@ -77,8 +81,9 @@ namespace FloatyImage
           newWidth = (int)((float)image.Width / image.Height * MaxIconDim);
         }
 
-        var bitmap = new Bitmap(image, newWidth, newHeight);
-        Icon = Icon.FromHandle(bitmap.GetHicon());
+        using var bitmap = new Bitmap(image, newWidth, newHeight);
+        using var icon = Icon.FromHandle(bitmap.GetHicon());
+        Icon = (Icon)icon.Clone();
       }
     }
 
